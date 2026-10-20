@@ -1,0 +1,837 @@
+{
+ "usecases": [
+  {
+   "id": "UC-EXC-001",
+   "name": "Cargar archivo de devolución de pagos en exceso (lectura y disparo del batch EXCB102)",
+   "actors": [
+    "operador back-office (usuario terminal con perfil EXC)"
+   ],
+   "screen": "EXCB0011.per",
+   "preconditions": [
+    "Sesión SCA válida: el programa se ejecuta con argumentos <sesion> <modulo> y valida privilegio de entrada 1796 (EXCB001) vía Carga_Parametros_sca/sp_sca_valida",
+    "Archivo plano del instituto (registros 01/02/08/09) colocado en la ruta de rescate (seg_modulo.ruta_rescate del módulo 'exc')",
+    "Precios del día cargados para grupos 1 (RCV) y 2 (vivienda) en fn_precio_dia"
+   ],
+   "main": [
+    {
+     "step": "El operador selecciona la opción 'Lectura' del menú PROCESOS BATCH",
+     "actor": "usuario"
+    },
+    {
+     "step": "Se solicita el privilegio 1797 (EXCB001L) y se revalida la sesión con sp_sca_valida",
+     "system": "EXCB001.Sca_Valida(2)"
+    },
+    {
+     "step": "El operador captura el nombre del archivo en el form EXCB0011",
+     "actor": "usuario"
+    },
+    {
+     "step": "El sistema valida que el nombre no sea nulo y que no exista ya una etapa 1 (LECTURA) en dis_ctrl_proceso con el mismo parametro1",
+     "system": "EXCB001.Lectura"
+    },
+    {
+     "step": "El sistema lista el contenido de la ruta de rescate (ls > archivos), lo carga a tabla temporal archivos_dis y verifica que el archivo capturado exista",
+     "system": "EXCB001.Lectura (RUN ejecuta)"
+    },
+    {
+     "step": "El sistema valida precios por grupo 1 (fecha hoy) y grupo 2 (primer día del mes) con EXECUTE PROCEDURE fn_precio_dia",
+     "system": "EXCB001.Lectura"
+    },
+    {
+     "step": "El operador confirma la ejecución con 'S' en el PROMPT 'Desea ejecutar el proceso [S/N]' (privilegio 1798 EXCB001LX)",
+     "actor": "usuario"
+    },
+    {
+     "step": "El sistema inserta el registro de control en dis_ctrl_proceso (proceso_cod='EXC', etapa_cod=1 LECTURA, hora_inicial, parametro1=nombre de archivo, usuario)",
+     "system": "EXCB001.Ejecuta_lectura"
+    },
+    {
+     "step": "El sistema lanza en segundo plano el batch de carga: nohup fglgo EXCB102 '<sesion>' <modulo> con log nohup.EXCB102",
+     "system": "EXCB001.Ejecuta_lectura (RUN ejecuta)"
+    }
+   ],
+   "alternates": [
+    {
+     "id": "UC-EXC-001-A1",
+     "trigger": "Nombre de archivo nulo",
+     "message": "ERROR 'Este campo no puede ser nulo' y regresa el cursor al campo"
+    },
+    {
+     "id": "UC-EXC-001-A2",
+     "trigger": "dis_ctrl_proceso ya tiene etapa 1 con ese parametro1",
+     "message": "PROMPT 'NOMBRE DE ARCHIVO YA CARGADO,VERIFICAR POR FAVOR' y regresa al campo"
+    },
+    {
+     "id": "UC-EXC-001-A3",
+     "trigger": "El archivo no existe en la ruta de rescate",
+     "message": "PROMPT 'NOMBRE DE ARCHIVO INCORRECTO', limpia pantalla, borra el listado auxiliar 'archivos' y regresa al menú"
+    },
+    {
+     "id": "UC-EXC-001-A4",
+     "trigger": "fn_precio_dia no regresa precios para un grupo/fecha",
+     "message": "ERROR 'NO EXISTEN PRECIOS PARA GRUPO : n De Fecha : fecha' y termina el programa (EXIT PROGRAM)"
+    },
+    {
+     "id": "UC-EXC-001-A5",
+     "trigger": "El operador responde 'N' o pulsa INTERRUPT",
+     "message": "Se limpia el form y se regresa al menú sin registrar la etapa 1"
+    },
+    {
+     "id": "UC-EXC-001-A6",
+     "trigger": "Falla el INSERT a dis_ctrl_proceso",
+     "message": "ERRORLOG + Graba_Log('2002') y termina el programa"
+    }
+   ],
+   "postconditions": [
+    "dis_ctrl_proceso contiene la fila de etapa 1 (LECTURA) con hora_inicial y el nombre del archivo en parametro1",
+    "El proceso EXCB102 corre en background (nohup) con la sesión y módulo heredados",
+    "Al terminar EXCB102: etapas 2, 3 y 4 registradas con folio y resultado; tablas exc_cza_exceso, exc_det_devpgo, exc_dep_devpgo, exc_sum_devpgo y safre_tmp:exc_devpgo_sdo pobladas; cifras de control excb002_cc.txt y excb002_cp.txt en ruta de rescate; correos enviados"
+   ],
+   "rules": [
+    "BR-EXC-002",
+    "BR-EXC-003",
+    "BR-EXC-017",
+    "BR-EXC-018"
+   ],
+   "resulting_state": "Archivo cargado y diagnosticado (o el batch terminó con error registrado en logs)",
+   "privileges": {
+    "execute": "1796 entrada; 1797 opción Lectura; 1798 ejecución"
+   },
+   "evidence": [
+    {
+     "file": "src/AF009_pgmas/EXCB001.4gl",
+     "line": 117
+    },
+    {
+     "file": "src/AF009_pgmas/EXCB001.4gl",
+     "line": 167
+    },
+    {
+     "file": "src/AF009_pgmas/EXCB001.4gl",
+     "line": 207
+    },
+    {
+     "file": "src/AF009_pgmas/EXCB001.4gl",
+     "line": 288
+    },
+    {
+     "file": "src/AF009_pgmas/EXCB001.4gl",
+     "line": 327
+    }
+   ]
+  },
+  {
+   "id": "UC-EXC-002",
+   "name": "Carga, provisión y diagnóstico batch del archivo (EXCB102 + librería EXCB136)",
+   "actors": [
+    "operador/scheduler (proceso lanzado por nohup desde EXCB001)"
+   ],
+   "preconditions": [
+    "dis_ctrl_proceso etapa 1 del día con parametro1 = nombre del archivo y hora_inicial máxima (seleccionada por EXCB102.Proceso)",
+    "Argumentos de línea de comando: <sesion> <modulo> (leídos por Sca_Valida(1)); privilegio 3732 (EXCB102)",
+    "Archivo en ruta de rescate con registros 01 (encabezado/cifras), 02 (detalle de solicitudes), 08 (depósitos/cuentas por cobrar) y 09 (sumario)"
+   ],
+   "main": [
+    {
+     "step": "EXCB102 arranca, valida sesión SCA y lee parámetros del módulo 'exc' (rutas de rescate y exportación)",
+     "system": "EXCB102.inicio"
+    },
+    {
+     "step": "Localiza la fila de control de etapa 1 del día con hora_inicial máxima y toma el nombre del archivo a generar",
+     "system": "EXCB102.Proceso (PREPARE/EXECUTE dinámico)"
+    },
+    {
+     "step": "Registra etapa 2 y separa el archivo por tipo de registro con sed: ^01→excdev_cza, ^02→excdev_det, ^08→excdev_dep (solo si la fecha de cambio de siefores es posterior a hoy, si no se crea vacío con touch), ^09→excdev_sum",
+     "system": "EXCB102.Separa_archivo"
+    },
+    {
+     "step": "Registra etapa 3 y extrae con cut los campos fecha de lote, consecutivo de lote y ids de pago a tablas temporales; valida ids de pago (posición 13='3' entidad a devolver, posición 14 en 7/8 tipo de depósito)",
+     "system": "EXCB102.Sube_datos"
+    },
+    {
+     "step": "Verifica que el lote (fecha_creac_lote + consecutivo_dia) no exista en exc_cza_exceso; genera folio nuevo con INSERT INTO glo_folio y SELECT MAX(folio)",
+     "system": "EXCB102.Sube_datos"
+    },
+    {
+     "step": "Genera archivos intermedios con REPORT (salida/salida1/salida2) y los sube con dbload a exc_cza_exceso (encabezado 01), exc_det_devpgo (detalle 02), exc_dep_devpgo (depósitos 08, solo tras cambio de siefores) y exc_sum_devpgo (sumario 09)",
+     "system": "EXCB102.Sube_datos (RUN lejecuta dbload)"
+    },
+    {
+     "step": "Si la fecha de cambio de siefores ya pasó, inserta dos registros 08 de pago sintéticos en exc_dep_devpgo (ins_reg_08, ids 01544+fecha lote+13711/13732)",
+     "system": "EXCB102.ins_reg_08"
+    },
+    {
+     "step": "Convierte importes de centavos a pesos (/100) y número de aplicaciones de vivienda de millonésimos (/1000000) en las tres tablas cargadas",
+     "system": "EXCB102.actualiza_monto"
+    },
+    {
+     "step": "Registra etapa 4 y ejecuta el diagnóstico por importe: EXCB136.validacion(folio) limpia safre_tmp:exc_devpgo_sdo, obtiene precios del día y clasifica cada solicitud (suficiente/parcial/rechazada) marcando/desmarcando cuentas",
+     "system": "EXCB102 → EXCB136.validacion"
+    },
+    {
+     "step": "Genera cifras de control: excb002_cc.txt (conteos por entidad/diagnóstico), excb2_cp_cza.txt + excb2_cp_det.txt concatenados a excb002_cp.txt (importes y precios por siefore/subcuenta)",
+     "system": "EXCB102.cif_con (REPORT r_report, p_report_cza, p_report_det)"
+    },
+    {
+     "step": "Actualiza la etapa 1 con el resultado 'A:<aceptadas> R:<rechazadas> PA:<parciales>' y envía dos correos con los informes",
+     "system": "EXCB102.Proceso + envia_mail"
+    }
+   ],
+   "alternates": [
+    {
+     "id": "UC-EXC-002-A1",
+     "trigger": "El lote ya existe en exc_cza_exceso (archivo ya procesado)",
+     "message": "gfolio=0 y resultado 'ESTE ARCHIVO YA HA SIDO PROCESADO' en la etapa 1; no se cargan datos"
+    },
+    {
+     "id": "UC-EXC-002-A2",
+     "trigger": "id_pago con entidad a devolver distinta de '3' o tipo de depósito fuera de 7/8",
+     "message": "Actualiza la etapa 3 con 'Proceso cancelado <ENTIDAD A DEVOLVER>/<TIPO DE DEPOSITO> invalida' y EXIT PROGRAM"
+    },
+    {
+     "id": "UC-EXC-002-A3",
+     "trigger": "Error de SQL en control de etapas",
+     "message": "DISPLAY de error y EXIT PROGRAM (trazado además por graba_logs_err)"
+    }
+   ],
+   "postconditions": [
+    "exc_cza_exceso, exc_det_devpgo, exc_dep_devpgo y exc_sum_devpgo pobladas con folio nuevo; exc_det_devpgo.diag_devolucion clasificado en 01/02/04",
+    "safre_tmp:exc_devpgo_sdo con el detalle de saldos/diagnóstico por movimiento para el folio",
+    "dis_ctrl_proceso con etapas 1-4 cerradas (hora_final, folio, resultado) y folio propagado",
+    "Cuentas aceptadas/parciales marcadas (SP marca_cuenta); cuentas que quedan rechazadas desmarcadas (SP desmarca_cuenta)",
+    "Informes excb002_cc.txt y excb002_cp.txt generados y enviados por correo"
+   ],
+   "mail_template": "sh /safre/est/shells/env_mail_gral.sh 'Informe/de/solicitudes/dev/pago' y 'Informe/de/importes/dev/pago' <archivo> txt <ruta_rescate> <programa>",
+   "rules": [
+    "BR-EXC-001",
+    "BR-EXC-002",
+    "BR-EXC-004",
+    "BR-EXC-005",
+    "BR-EXC-006",
+    "BR-EXC-007",
+    "BR-EXC-008",
+    "BR-EXC-011",
+    "BR-EXC-012",
+    "BR-EXC-013",
+    "BR-EXC-021"
+   ],
+   "resulting_state": "Lote cargado y diagnosticado con folio asignado, listo para liquidación (EXCB005) o respuesta (EXCB007)",
+   "privileges": {
+    "execute": "3732 (EXCB102)"
+   },
+   "evidence": [
+    {
+     "file": "src/AF009_pgmas/EXCB102.4gl",
+     "line": 136
+    },
+    {
+     "file": "src/AF009_pgmas/EXCB102.4gl",
+     "line": 236
+    },
+    {
+     "file": "src/AF009_pgmas/EXCB102.4gl",
+     "line": 320
+    },
+    {
+     "file": "src/AF009_pgmas/EXCB102.4gl",
+     "line": 428
+    },
+    {
+     "file": "src/AF009_pgmas/EXCB102.4gl",
+     "line": 557
+    },
+    {
+     "file": "src/AF009_pgmas/EXCB102.4gl",
+     "line": 851
+    },
+    {
+     "file": "src/AF009_pgmas/EXCB136.4gl",
+     "line": 28
+    }
+   ]
+  },
+  {
+   "id": "UC-EXC-003",
+   "name": "Reversar la carga de un archivo (EXCB001 Reverso + batch EXCB100)",
+   "actors": [
+    "operador back-office (usuario terminal con perfil EXC)"
+   ],
+   "screen": "PROMPT folio a reversar (ventana vtna_reverso, EXCB001.4gl:353)",
+   "preconditions": [
+    "Sesión SCA válida con privilegio de opción 1797 (EXCB001L)",
+    "Folio ya cargado por EXCB102 y SIN liquidación posterior"
+   ],
+   "main": [
+    {
+     "step": "El operador selecciona la opción 'Reverso' del menú PROCESOS BATCH",
+     "actor": "usuario"
+    },
+    {
+     "step": "El operador digita el número de folio a reversar en la ventana vtna_reverso",
+     "actor": "usuario"
+    },
+    {
+     "step": "El sistema valida que la captura sea solo dígitos numéricos",
+     "system": "EXCB001.reverso"
+    },
+    {
+     "step": "El sistema valida el folio con tres reglas: sin etapas 5/7 en dis_ctrl_proceso (no liquidado), con registros en exc_cza_exceso (folio cargado) y sin registros en dis_cuenta (sin liquidación de recursos)",
+     "system": "EXCB001.valida_folio_reverso"
+    },
+    {
+     "step": "El operador confirma con 'S' el PROMPT 'Deseas realizar el reverso S/N'",
+     "actor": "usuario"
+    },
+    {
+     "step": "El sistema lanza en background el reverso: nohup fglgo EXCB100 <folio> '<sesion>' <modulo>",
+     "system": "EXCB001.reverso (RUN ejecuta)"
+    },
+    {
+     "step": "EXCB100 desmarca las cuentas de las solicitudes 01/04 (SP desmarca_cuenta, marca 540 IMSS / 542 INFONAVIT) y borra todos los registros del folio en exc_cza_exceso, exc_det_devpgo, exc_dep_devpgo, exc_sum_devpgo, safre_tmp:exc_devpgo_sdo y dis_ctrl_proceso (proceso EXC)",
+     "system": "EXCB100.reverso_desmarca + rever_exc_arch"
+    },
+    {
+     "step": "EXCB100 genera el reporte CC_ReversoSIDECOIMSS_<DDMMYY>.txt en ruta de listados (detalle de registros reversados por tabla) y lo envía por correo",
+     "system": "EXCB100.Genera_rep + envia_mail"
+    }
+   ],
+   "alternates": [
+    {
+     "id": "UC-EXC-003-A1",
+     "trigger": "Captura con caracteres no numéricos",
+     "message": "'Favor de ingresar solo numeros' y regreso al menú"
+    },
+    {
+     "id": "UC-EXC-003-A2",
+     "trigger": "Existen etapas 5 o 7 en dis_ctrl_proceso",
+     "message": "'No se puede realizar reverso de archivo, existe liquidación' (semaforo=0)"
+    },
+    {
+     "id": "UC-EXC-003-A3",
+     "trigger": "No existen registros del folio en exc_cza_exceso",
+     "message": "'No existen registros con el Folio, ingresado en pantalla' (semaforo=0)"
+    },
+    {
+     "id": "UC-EXC-003-A4",
+     "trigger": "Existen registros del folio en dis_cuenta",
+     "message": "'No se puede realizar reverso de archivos, existe liquidación de recursos' (semaforo=0)"
+    },
+    {
+     "id": "UC-EXC-003-A5",
+     "trigger": "El operador responde 'N' a la confirmación",
+     "message": "No se lanza EXCB100 y se cierra la ventana"
+    }
+   ],
+   "postconditions": [
+    "Todas las tablas del módulo quedan sin registros del folio (encabezado, detalle, depósitos, sumario, saldos temporales y control de proceso)",
+    "Cuentas que habían quedado marcadas quedan desmarcadas (SP desmarca_cuenta)",
+    "Reporte CC_ReversoSIDECOIMSS_<DDMMYY>.txt generado en ruta de listados y enviado por correo"
+   ],
+   "mail_template": "sh /safre/est/shells/env_mail_gral.sh 'Informe/de/reverso/dev/pago' CC_ReversoSIDECOIMSS_<DDMMYY> txt <ruta_listados> <programa>",
+   "rules": [
+    "BR-EXC-014",
+    "BR-EXC-020"
+   ],
+   "resulting_state": "Folio eliminado del sistema; el archivo puede volver a cargarse",
+   "privileges": {
+    "execute": "1797 opción Reverso; 3731 (EXCB100 batch)"
+   },
+   "evidence": [
+    {
+     "file": "src/AF009_pgmas/EXCB001.4gl",
+     "line": 125
+    },
+    {
+     "file": "src/AF009_pgmas/EXCB001.4gl",
+     "line": 343
+    },
+    {
+     "file": "src/AF009_pgmas/EXCB001.4gl",
+     "line": 383
+    },
+    {
+     "file": "src/AF009_pgmas/EXCB100.4gl",
+     "line": 149
+    },
+    {
+     "file": "src/AF009_pgmas/EXCB100.4gl",
+     "line": 206
+    },
+    {
+     "file": "src/AF009_pgmas/EXCB100.4gl",
+     "line": 392
+    }
+   ]
+  },
+  {
+   "id": "UC-EXC-004",
+   "name": "Parametrizar y disparar la liquidación RCV/VIVIENDA de un folio (EXCB005)",
+   "actors": [
+    "operador back-office (usuario terminal con perfil EXC)"
+   ],
+   "screen": "EXCB0051.per",
+   "preconditions": [
+    "Sesión SCA válida con privilegio de entrada 1800 (EXCB005)",
+    "Folio cargado y diagnosticado por EXCB102 (etapa 1 del proceso EXC existente)"
+   ],
+   "main": [
+    {
+     "step": "El operador ejecuta EXCB005; se abre la ventana 'LIQUIDACION DE RCV Y VIVIENDA' y el sistema captura el folio por INPUT",
+     "actor": "usuario"
+    },
+    {
+     "step": "El sistema valida: folio con etapa 1 en dis_ctrl_proceso, registros a liquidar en safre_tmp:exc_devpgo_sdo (subcuentas 1,2,5,4), que NO exista ya etapa 5 (liquidado) y que el folio no exista en dis_cuenta",
+     "system": "EXCB005.liquidacion"
+    },
+    {
+     "step": "El sistema asigna fecha de liquidación = TODAY y la despliega en el form",
+     "system": "EXCB005.liquidacion"
+    },
+    {
+     "step": "El sistema valida precios del día (fn_precio_dia grupos 1 y 2)",
+     "system": "EXCB005.ValidarPrecios"
+    },
+    {
+     "step": "El operador confirma con 'S' el PROMPT 'Desea ejecutar el proceso [S/N]' (privilegio 1802 EXCB005RX)",
+     "actor": "usuario"
+    },
+    {
+     "step": "El sistema inserta la etapa 5 (LIQUIDACION) en dis_ctrl_proceso con parametro2='RCV' y folio",
+     "system": "EXCB005.ejecuta_liquidacion_rcv"
+    },
+    {
+     "step": "El sistema lanza en background la liquidación: nohup fglgo EXCB106 RCV <folio> '<sesion>' <modulo>",
+     "system": "EXCB005.ejecuta_liquidacion_rcv (RUN ejecuta)"
+    }
+   ],
+   "alternates": [
+    {
+     "id": "UC-EXC-004-A1",
+     "trigger": "Folio inexistente en etapa 1",
+     "message": "PROMPT 'FOLIO DE PAGOS EN EXCESO NO EXISTE' y regresa al campo folio"
+    },
+    {
+     "id": "UC-EXC-004-A2",
+     "trigger": "Folio sin registros en safre_tmp:exc_devpgo_sdo (subcuentas 1,2,5,4)",
+     "message": "PROMPT 'FOLIO NO TIENE REGISTROS PARA LIQUIDAR' y regresa al campo folio"
+    },
+    {
+     "id": "UC-EXC-004-A3",
+     "trigger": "Ya existe etapa 5 del folio",
+     "message": "PROMPT 'FOLIO DE PAGOS EN EXCESO YA LIQUIDADO' y regresa al campo folio"
+    },
+    {
+     "id": "UC-EXC-004-A4",
+     "trigger": "Folio ya presente en dis_cuenta",
+     "message": "PROMPT 'FOLIO YA EXISTE EN CATALOGO DE LIQUIDACION' y regresa al campo folio"
+    },
+    {
+     "id": "UC-EXC-004-A5",
+     "trigger": "El operador responde 'N' o pulsa INTERRUPT",
+     "message": "'Proceso de liquidacion CANCELADO' y regreso sin registrar etapa 5"
+    },
+    {
+     "id": "UC-EXC-004-A6",
+     "trigger": "No hay precios del día (fn_precio_dia vacío)",
+     "message": "ERROR 'NO EXISTEN PRECIOS PARA GRUPO...' y EXIT PROGRAM"
+    }
+   ],
+   "postconditions": [
+    "dis_ctrl_proceso con fila de etapa 5 (LIQUIDACION) con hora_inicial, folio y parametro2='RCV'",
+    "EXCB106 corre en background con argumentos RCV y folio"
+   ],
+   "rules": [
+    "BR-EXC-003",
+    "BR-EXC-019",
+    "BR-EXC-017"
+   ],
+   "resulting_state": "Liquidación en curso (la cierra EXCB106 con 'Terminada liquidacion dev. pagos en exceso')",
+   "privileges": {
+    "execute": "1800 entrada; 1802 (EXCB005RX) ejecución"
+   },
+   "evidence": [
+    {
+     "file": "src/AF009_pgmas/EXCB005.4gl",
+     "line": 113
+    },
+    {
+     "file": "src/AF009_pgmas/EXCB005.4gl",
+     "line": 135
+    },
+    {
+     "file": "src/AF009_pgmas/EXCB005.4gl",
+     "line": 250
+    },
+    {
+     "file": "src/AF009_pgmas/EXCB005.4gl",
+     "line": 308
+    },
+    {
+     "file": "src/AF009_pgmas/EXCB005.4gl",
+     "line": 348
+    }
+   ]
+  },
+  {
+   "id": "UC-EXC-005",
+   "name": "Liquidar la devolución de pagos en exceso (batch EXCB106)",
+   "actors": [
+    "operador/scheduler (proceso lanzado por nohup desde EXCB005)"
+   ],
+   "preconditions": [
+    "Argumentos: ARG_VAL(1)='RCV' y ARG_VAL(2)=folio (más <sesion> <modulo> para SCA); privilegio 3733 (EXCB106)",
+    "Etapa 5 registrada en dis_ctrl_proceso para el folio",
+    "safre_tmp:exc_devpgo_sdo con diagnóstico vigente e importes disponibles por movimiento"
+   ],
+   "main": [
+    {
+     "step": "EXCB106 arranca, valida sesión SCA y lee parámetros del módulo 'exc'",
+     "system": "EXCB106.inicializa"
+    },
+    {
+     "step": "Localiza la fila de control de etapa 5 del folio (fecha liquidación y folio)",
+     "system": "EXCB106.Proceso"
+    },
+    {
+     "step": "Re-ejecuta el diagnóstico con precios del día: EXCB136.validacion(folio) sobre exc_det_devpgo",
+     "system": "EXCB106.Proceso → EXCB136.validacion"
+    },
+    {
+     "step": "Recorre safre_tmp:exc_devpgo_sdo del folio con diagnóstico IN (1,4) e imp_dis_pesos > 0, por NSS/subcuenta/tipo de movimiento",
+     "system": "EXCB106.Proceso_principal (cursor cur_liq)"
+    },
+    {
+     "step": "Por cada movimiento inserta la liquidación en dis_cuenta con importes NEGADOS (pesos y acciones * -1), fecha de pago/valor/conversión = TODAY, estado '6' y etiqueta '1'",
+     "system": "EXCB106.Proceso_principal (INSERT INTO dis_cuenta)"
+    },
+    {
+     "step": "Desmarca la cuenta liquidada (SP desmarca_cuenta con marca 542 para subcuenta 4 / 540 para el resto)",
+     "system": "EXCB136.des_marca"
+    },
+    {
+     "step": "Cierra la etapa 5 con resultado 'Terminada liquidacion dev. pagos en exceso'",
+     "system": "EXCB106.Actualiza_etapa"
+    },
+    {
+     "step": "Genera cifras de control: excb6_rsmn.txt (resumen de solicitudes aceptadas/rechazadas/parciales por IMSS/INFONAVIT) y excb6_cc_cza.txt+excb6_cc_det.txt → excb006_cc.txt (importes y precios por siefore desde dis_cuenta)",
+     "system": "EXCB106.cif_resumen + cif_con_imp"
+    },
+    {
+     "step": "Envía dos correos: 'Informe/liquidacion/dev/pago/resumen/de/cifras' e 'Informe/liquidacion/dev/pago/importes/por/siefore'",
+     "system": "EXCB106.envia_mail"
+    }
+   ],
+   "alternates": [
+    {
+     "id": "UC-EXC-005-A1",
+     "trigger": "Error SQL durante el proceso",
+     "message": "graba_logs_err registra el error en .log + safre_seg y el programa termina (WHENEVER ERROR)"
+    }
+   ],
+   "postconditions": [
+    "dis_cuenta poblada con los movimientos liquidados (importes negados = descargo de la subcuenta)",
+    "Cuentas desmarcadas (sin marca 540/542 activa)",
+    "Etapa 5 cerrada con hora_final y resultado 'Terminada liquidación'",
+    "Informes excb6_rsmn.txt y excb006_cc.txt generados y enviados por correo"
+   ],
+   "mail_template": "sh /safre/est/shells/env_mail_gral.sh 'Informe/liquidacion/dev/pago/resumen/de/cifras' e 'Informe/liquidacion/dev/pago/importes/por/siefore' <archivo> txt <ruta_rescate> <programa>",
+   "rules": [
+    "BR-EXC-001",
+    "BR-EXC-004",
+    "BR-EXC-005",
+    "BR-EXC-015",
+    "BR-EXC-020"
+   ],
+   "resulting_state": "Folio liquidado (bloquea el reverso y fija la respuesta en modo DEFINITIVO)",
+   "privileges": {
+    "execute": "3733 (EXCB106)"
+   },
+   "evidence": [
+    {
+     "file": "src/AF009_pgmas/EXCB106.4gl",
+     "line": 117
+    },
+    {
+     "file": "src/AF009_pgmas/EXCB106.4gl",
+     "line": 147
+    },
+    {
+     "file": "src/AF009_pgmas/EXCB106.4gl",
+     "line": 185
+    },
+    {
+     "file": "src/AF009_pgmas/EXCB106.4gl",
+     "line": 232
+    },
+    {
+     "file": "src/AF009_pgmas/EXCB106.4gl",
+     "line": 309
+    }
+   ]
+  },
+  {
+   "id": "UC-EXC-006",
+   "name": "Generar el archivo de respuesta a PROCESAR (EXCB007 + batch EXCB103)",
+   "actors": [
+    "operador back-office (captura del folio)",
+    "operador/scheduler (EXCB103 lanzado por nohup)"
+   ],
+   "screen": "EXCB0071.per",
+   "preconditions": [
+    "Sesión SCA válida: privilegio de entrada 1806 (EXCB007), opción 1807 (EXCB007L)",
+    "Folio cargado y diagnosticado (etapa 1 en dis_ctrl_proceso)",
+    "Ruta de envío configurada (seg_modulo.ruta_envio del módulo 'exc')"
+   ],
+   "main": [
+    {
+     "step": "El operador selecciona la opción 'Archivo' del menú PROCESOS BATCH de EXCB007",
+     "actor": "usuario"
+    },
+    {
+     "step": "El operador captura el folio en el form EXCB0071",
+     "actor": "usuario"
+    },
+    {
+     "step": "El sistema valida que el folio tenga etapa 1 del proceso EXC en dis_ctrl_proceso",
+     "system": "EXCB007.Lectura"
+    },
+    {
+     "step": "El sistema valida precios del día (fn_precio_dia grupos 1 y 2)",
+     "system": "EXCB007.ValidarPrecios"
+    },
+    {
+     "step": "El operador confirma con 'S' (privilegio 1808 EXCB007LX)",
+     "actor": "usuario"
+    },
+    {
+     "step": "El sistema inserta (o actualiza si ya existía) la etapa 6 (ARCHIVO DE SALIDA) en dis_ctrl_proceso con el folio",
+     "system": "EXCB007.Ejecuta_lectura"
+    },
+    {
+     "step": "El sistema lanza en background: nohup fglgo EXCB103 <folio> '<sesion>' <modulo>",
+     "system": "EXCB007.Ejecuta_lectura (RUN ejecuta)"
+    },
+    {
+     "step": "EXCB103 determina el modo: si el folio ya está en dis_cuenta (liquidado) NO re-diagnostica y solo obtiene precios (reporte DEFINITIVO); si no, re-ejecuta EXCB136.validacion (reporte PREVIO)",
+     "system": "EXCB103.inicio + proceso"
+    },
+    {
+     "step": "Genera dev_cza (encabezado 01 desde exc_cza_exceso, REPORT r_cza) y dev_det (detalle 02 desde exc_det_devpgo con importes disponibles, REPORT r_det)",
+     "system": "EXCB103.archc_ncbzdo + reg_02"
+    },
+    {
+     "step": "Regenera las cuentas por cobrar 08: borra los 08 estado=3 previos (id_pago 71/73) y recalcula por siefore desde safre_tmp:exc_dep08 y exc_devpgo_sdo (RCV id 71 y vivienda id 73)",
+     "system": "EXCB103.ctaPorCobrar08_001 + ctaPorCobrar08_002"
+    },
+    {
+     "step": "Genera dev_dep (registro 08 desde exc_dep_devpgo estado=3, REPORT r_dep) solo si la fecha de cambio de siefores > hoy; si no, crea dev_dep vacío con touch; y dev_sum (sumario 09, REPORT r_sum)",
+     "system": "EXCB103.archc_dep + archc_sum"
+    },
+    {
+     "step": "Concatena dev_cza + dev_det + dev_dep + dev_sum en <AAAAMMDD>.DEV bajo ruta de envío, aplica chmod 777 y borra los parciales",
+     "system": "EXCB103.proceso (RUN cat/chmod/rm)"
+    },
+    {
+     "step": "Actualiza la etapa 6 con 'Archivo de respuesta a PROCESAR generado' y produce cifras de control excb003_cc.txt (REPORT r_cif_cza + r_cif_det) que se envían por correo",
+     "system": "EXCB103.Actualiza_etapa + cif_con + envia_mail"
+    }
+   ],
+   "alternates": [
+    {
+     "id": "UC-EXC-006-A1",
+     "trigger": "Folio sin etapa 1",
+     "message": "PROMPT 'FOLIO DE PAGOS EN EXCESO NO EXISTE' y regresa al campo folio"
+    },
+    {
+     "id": "UC-EXC-006-A2",
+     "trigger": "El operador responde 'N' o pulsa INTERRUPT",
+     "message": "'Generacion de archivo CANCELADO'; no se registra etapa 6"
+    },
+    {
+     "id": "UC-EXC-006-A3",
+     "trigger": "Falla el INSERT/UPDATE de la etapa 6",
+     "message": "ERRORLOG + Graba_Log('2002') y EXIT PROGRAM"
+    }
+   ],
+   "postconditions": [
+    "Archivo de respuesta <AAAAMMDD>.DEV (registros 01/02/08/09) generado en la ruta de envío con permisos 777",
+    "exc_dep_devpgo con los registros 08 de cuentas por cobrar recalculados (estado=3)",
+    "Etapa 6 cerrada en dis_ctrl_proceso con resultado",
+    "Cifras de control excb003_cc.txt generadas y enviadas por correo"
+   ],
+   "mail_template": "sh /safre/est/shells/env_mail_gral.sh 'Informe/archivo/respuesta/dev/pago' excb003_cc txt <ruta_envio> <programa>",
+   "rules": [
+    "BR-EXC-001",
+    "BR-EXC-003",
+    "BR-EXC-012",
+    "BR-EXC-016",
+    "BR-EXC-020",
+    "BR-EXC-021"
+   ],
+   "resulting_state": "Archivo de respuesta disponible para el instituto (PROCESAR); folio queda con etapa 6 cerrada",
+   "privileges": {
+    "execute": "1806 entrada; 1807 opción Archivo; 1808 ejecución; 3734 (EXCB103 batch)"
+   },
+   "evidence": [
+    {
+     "file": "src/AF009_pgmas/EXCB007.4gl",
+     "line": 117
+    },
+    {
+     "file": "src/AF009_pgmas/EXCB007.4gl",
+     "line": 189
+    },
+    {
+     "file": "src/AF009_pgmas/EXCB007.4gl",
+     "line": 307
+    },
+    {
+     "file": "src/AF009_pgmas/EXCB103.4gl",
+     "line": 130
+    },
+    {
+     "file": "src/AF009_pgmas/EXCB103.4gl",
+     "line": 204
+    },
+    {
+     "file": "src/AF009_pgmas/EXCB103.4gl",
+     "line": 332
+    }
+   ]
+  },
+  {
+   "id": "UC-EXC-007",
+   "name": "Consultar el catálogo de control de proceso (EXCC001)",
+   "actors": [
+    "operador back-office (usuario terminal con perfil EXC)"
+   ],
+   "screen": "EXCC0011.per",
+   "preconditions": [
+    "Sesión SCA válida: privilegio de entrada 1810 (EXCC001), opción 1811 (EXCC001C)"
+   ],
+   "main": [
+    {
+     "step": "El operador selecciona la opción 'Consulta' del menú CATALOGO CONTROL PROCESO",
+     "actor": "usuario"
+    },
+    {
+     "step": "El operador captura criterios de búsqueda (query-by-example) por fecha_proceso, proceso_cod, folio y etapa_cod en un CONSTRUCT",
+     "actor": "usuario"
+    },
+    {
+     "step": "El operador ejecuta la búsqueda con CONTROL-M (o cancela con CONTROL-C)",
+     "actor": "usuario"
+    },
+    {
+     "step": "El sistema arma dinámicamente 'SELECT * FROM dis_ctrl_proceso WHERE <criterio> ORDER BY 1,4' con PREPARE y abre un cursor SCROLL WITH HOLD",
+     "system": "EXCC001.Consulta"
+    },
+    {
+     "step": "El sistema despliega el primer registro en el form EXCC0011 (todos los campos de dis_ctrl_proceso)",
+     "system": "EXCC001.Inicializa (DISPLAY BY NAME g_reg.*)"
+    },
+    {
+     "step": "El operador navega los resultados con el submenú de botones: Primero/Siguiente/Anterior/Ultimo (FETCH FIRST/NEXT/PREVIOUS/LAST)",
+     "actor": "usuario"
+    },
+    {
+     "step": "El operador sale con la tecla L (saLir) y regresa al menú principal",
+     "actor": "usuario"
+    }
+   ],
+   "alternates": [
+    {
+     "id": "UC-EXC-007-A1",
+     "trigger": "CONTROL-C durante el CONSTRUCT",
+     "message": "'BUSQUEDA CANCELADA...' y regreso al menú"
+    },
+    {
+     "id": "UC-EXC-007-A2",
+     "trigger": "La búsqueda no regresa registros",
+     "message": "'Registro no encontrado.' y cierre de la ventana de consulta"
+    }
+   ],
+   "postconditions": [
+    "Sin cambios en datos: consulta de solo lectura sobre dis_ctrl_proceso"
+   ],
+   "rules": [
+    "BR-EXC-017"
+   ],
+   "resulting_state": "Registro(s) de control de proceso consultados",
+   "privileges": {
+    "execute": "1810 entrada; 1811 (EXCC001C) opción Consulta"
+   },
+   "evidence": [
+    {
+     "file": "src/AF009_pgmas/EXCC001.4gl",
+     "line": 125
+    },
+    {
+     "file": "src/AF009_pgmas/EXCC001.4gl",
+     "line": 153
+    },
+    {
+     "file": "src/AF009_pgmas/EXCC001.4gl",
+     "line": 215
+    }
+   ]
+  },
+  {
+   "id": "UC-EXC-008",
+   "name": "Imprimir el listado del catálogo de control de proceso (EXCC001)",
+   "actors": [
+    "operador back-office (usuario terminal con perfil EXC)"
+   ],
+   "screen": "EXCC0011.per",
+   "preconditions": [
+    "Consulta vigente con cursor abierto sobre dis_ctrl_proceso (UC-EXC-007)",
+    "Privilegio 1812 (EXCC001CX) para la opción Impresion"
+   ],
+   "main": [
+    {
+     "step": "El operador selecciona la opción 'Impresion' del submenú de botones",
+     "actor": "usuario"
+    },
+    {
+     "step": "El sistema genera el archivo de impresión <usuario>.IMPCONPROCESO<fecha>_<hora> en seg_modulo.ruta_listados con el REPORT rpt_tabcity (encabezado, columnas del control de proceso y total de registros)",
+     "system": "EXCC001.Impresion (START REPORT rpt_tabcity)"
+    },
+    {
+     "step": "El sistema lo envía a la impresora con el comando lp",
+     "system": "EXCC001.Impresion (RUN g_lista)"
+    }
+   ],
+   "alternates": [
+    {
+     "id": "UC-EXC-008-A1",
+     "trigger": "El cursor no tiene registros",
+     "message": "'Registro no encontrado.' en la navegación; el reporte sale vacío"
+    }
+   ],
+   "postconditions": [
+    "Listado físico/virtual generado en ruta de listados y enviado a la cola de impresión"
+   ],
+   "rules": [
+    "BR-EXC-017"
+   ],
+   "resulting_state": "Listado del catálogo de control de proceso impreso",
+   "privileges": {
+    "execute": "1812 (EXCC001CX)"
+   },
+   "evidence": [
+    {
+     "file": "src/AF009_pgmas/EXCC001.4gl",
+     "line": 234
+    },
+    {
+     "file": "src/AF009_pgmas/EXCC001.4gl",
+     "line": 299
+    },
+    {
+     "file": "src/AF009_pgmas/EXCC001.4gl",
+     "line": 322
+    }
+   ]
+  }
+ ]
+}

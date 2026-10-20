@@ -1,0 +1,161 @@
+{
+ "$schema": "http://json-schema.org/draft-07/schema#",
+ "additionalProperties": false,
+ "properties": {
+  "menu_source": {
+   "type": "string"
+  },
+  "options": {
+   "items": {
+    "properties": {
+     "evidence": {
+      "items": {
+       "additionalProperties": false,
+       "properties": {
+        "file": {
+         "type": "string"
+        },
+        "line": {
+         "type": "integer"
+        }
+       },
+       "required": [
+        "file"
+       ],
+       "type": "object"
+      },
+      "minItems": 1,
+      "type": "array"
+     },
+     "id": {
+      "type": "string"
+     },
+     "privileges": {
+      "properties": {
+       "execute": {
+        "type": "string"
+       },
+       "view": {
+        "type": "string"
+       }
+      },
+      "type": "object"
+     },
+     "screen": {
+      "type": "string"
+     },
+     "title": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "id",
+     "title"
+    ],
+    "type": "object"
+   },
+   "type": "array"
+  },
+  "privileges": {
+   "items": {
+    "properties": {
+     "code": {
+      "type": "string"
+     },
+     "description": {
+      "type": "string"
+     },
+     "id": {
+      "type": [
+       "string",
+       "integer"
+      ]
+     }
+    },
+    "required": [
+     "code"
+    ],
+    "type": "object"
+   },
+   "type": "array"
+  },
+  "screens": {
+   "items": {
+    "properties": {
+     "buttons": {
+      "items": {
+       "properties": {
+        "handler": {
+         "type": "string"
+        },
+        "label": {
+         "type": "string"
+        }
+       },
+       "type": "object"
+      },
+      "type": "array"
+     },
+     "evidence": {
+      "items": {
+       "additionalProperties": false,
+       "properties": {
+        "file": {
+         "type": "string"
+        },
+        "line": {
+         "type": "integer"
+        }
+       },
+       "required": [
+        "file"
+       ],
+       "type": "object"
+      },
+      "minItems": 1,
+      "type": "array"
+     },
+     "fields": {
+      "items": {
+       "properties": {
+        "id": {
+         "type": "string"
+        },
+        "maxlength": {
+         "type": "integer"
+        },
+        "readonly": {
+         "type": "boolean"
+        },
+        "type": {
+         "type": "string"
+        }
+       },
+       "type": "object"
+      },
+      "type": "array"
+     },
+     "file": {
+      "type": "string"
+     },
+     "kind": {
+      "type": "string"
+     },
+     "title": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "file"
+    ],
+    "type": "object"
+   },
+   "type": "array"
+  }
+ },
+ "required": [
+  "options"
+ ],
+ "title": "functional facts",
+ "type": "object"
+}

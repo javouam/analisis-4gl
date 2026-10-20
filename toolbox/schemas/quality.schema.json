@@ -1,0 +1,96 @@
+{
+ "$schema": "http://json-schema.org/draft-07/schema#",
+ "additionalProperties": false,
+ "properties": {
+  "evidence": {
+   "items": {
+    "additionalProperties": false,
+    "properties": {
+     "file": {
+      "type": "string"
+     },
+     "line": {
+      "type": "integer"
+     }
+    },
+    "required": [
+     "file"
+    ],
+    "type": "object"
+   },
+   "minItems": 1,
+   "type": "array"
+  },
+  "god_classes": {
+   "items": {
+    "properties": {
+     "cbo": {
+      "type": "integer"
+     },
+     "class": {
+      "type": "string"
+     },
+     "loc": {
+      "type": "integer"
+     },
+     "wmc": {
+      "type": "number"
+     }
+    },
+    "required": [
+     "class"
+    ],
+    "type": "object"
+   },
+   "type": "array"
+  },
+  "measures": {
+   "properties": {
+    "bugs": {
+     "type": "integer"
+    },
+    "code_smells": {
+     "type": "integer"
+    },
+    "complexity": {
+     "type": "integer"
+    },
+    "debt_hours": {
+     "type": "number"
+    },
+    "duplication_pct": {
+     "type": "number"
+    },
+    "ncloc": {
+     "type": "integer"
+    },
+    "vulnerabilities": {
+     "type": "integer"
+    }
+   },
+   "required": [
+    "ncloc"
+   ],
+   "type": "object"
+  },
+  "tools": {
+   "items": {
+    "properties": {
+     "name": {
+      "type": "string"
+     },
+     "version": {
+      "type": "string"
+     }
+    },
+    "type": "object"
+   },
+   "type": "array"
+  }
+ },
+ "required": [
+  "measures"
+ ],
+ "title": "quality facts",
+ "type": "object"
+}

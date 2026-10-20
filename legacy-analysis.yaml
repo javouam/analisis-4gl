@@ -1,0 +1,19 @@
+# Manifiesto del análisis legacy — este archivo configura la fábrica para UN cliente.
+# Las skills legacy-* son genéricas; TODO lo específico del cliente vive aquí.
+version: 1
+client: sura
+language: es
+stack: 4gl                      # la fábrica selecciona extractors/skills 4GL
+toolbox_path: toolbox           # schemas/templates/render/gates/extract/workflows
+facts_dir: facts                # hechos estructurados (versionados en git)
+templates_version: v1-4gl
+artifact: src/AF009_pgmas       # fuentes 4GL del cliente (SOLO LECTURA)
+golden_docs: []                 # sin documentos de referencia del cliente aún
+deliverable_template: "input/Anexo 1. Formato Preguntas y Aclaraciones.xlsx"
+confidentiality:
+  secrets: obfuscate            # ubicación+tipo, nunca el valor
+  distribution: private-repo-only
+docs_layout: [01-funcional, 02-arquitectura, 03-tecnica, 04-seguridad, 05-modernizacion]
+presentations_dir: .docs/presentaciones
+render_out: .docs               # salida del renderer (gitignored: derivable)
+human_checkpoints: [critical-findings, parity-matrix, delivery]

@@ -1,0 +1,200 @@
+{
+  "executive": {
+    "counts": {
+      "programas": 9,
+      "forms": 4,
+      "funciones": 94,
+      "reports": 17,
+      "lineas_totales": 8098,
+      "ncloc": 6258,
+      "complejidad": 771,
+      "god_modules": 5,
+      "menus": 4,
+      "opciones_menu": 13,
+      "pantallas": 5,
+      "privilegios_sca": 15,
+      "casos_de_uso": 8,
+      "reglas_negocio": 21,
+      "stored_procedures": 8,
+      "comandos_shell": 53,
+      "includes_globals": 2,
+      "sast_findings": 30,
+      "sast_confirmados": 8,
+      "sast_high": 19,
+      "sast_high_confirmados": 5,
+      "sast_latentes": 15,
+      "sast_refutados": 7,
+      "cves_dependencia": "N/A",
+      "provenance": {
+        "programas": "inventory.counts.programs",
+        "forms": "inventory.counts.forms",
+        "funciones": "inventory.counts.functions",
+        "reports": "inventory.counts.reports",
+        "lineas_totales": "inventory.counts.lines_total",
+        "ncloc": "quality.measures.ncloc",
+        "complejidad": "quality.measures.complexity",
+        "god_modules": "len(quality.god_classes)",
+        "menus": "inventory.counts.menus",
+        "opciones_menu": "len(functional.options) — inventory.counts.menu_commands=12 cuenta solo COMMAND clásicos; el COMMAND KEY(\"L\") de EXCC001.4gl:240 suma la 13a opción (nota en functional.menu_source)",
+        "pantallas": "len(functional.screens)",
+        "privilegios_sca": "len(functional.privileges)",
+        "casos_de_uso": "len(usecases.usecases)",
+        "reglas_negocio": "len(br.rules)",
+        "stored_procedures": "len(modules4gl.counts.stored_procedures)",
+        "comandos_shell": "modules4gl.counts.shell_commands",
+        "includes_globals": "modules4gl.counts.includes",
+        "sast_findings": "len(sast.findings)",
+        "sast_confirmados": "len([f in sast.findings | status=confirmed])",
+        "sast_high": "len([f in sast.findings | severity=HIGH])",
+        "sast_high_confirmados": "len([f in sast.findings | severity=HIGH y status=confirmed])",
+        "sast_latentes": "len([f in sast.findings | status=latent])",
+        "sast_refutados": "len([f in sast.findings | status=refuted])",
+        "cves_dependencia": "fact vulnerabilities inexistente — CVE-por-dependencia N/A para core 4GL sin librerías terceras empaquetadas (inventory.libs=[] y stack.languages=[informix-4gl])"
+      }
+    },
+    "summary_points": [
+      {
+        "point": "AF009 (proyecto safre_af) es la aplicación Informix 4GL de devolución de pagos en exceso del dominio AFORE/pensiones México: un pipeline batch con puntas interactivas de terminal que cubre lectura del archivo del instituto, carga/diagnóstico por saldos, liquidación RCV/VIVIENDA, generación del archivo de respuesta <AAAAMMDD>.DEV, reverso y consulta del control de proceso (dis_ctrl_proceso); la lógica crítica de diagnóstico y marcado de cuentas reside en la librería compartida EXCB136 incluida por EXCB102 y EXCB103.",
+        "provenance": "inventory.app + inventory.stack + modules4gl.counts (libraries=1) + usecases.usecases (UC-EXC-001..008)"
+      },
+      {
+        "point": "Alcance mediano con complejidad concentrada: 8.098 líneas totales (6.258 de código) en 9 programas + 4 forms, 94 funciones y 17 REPORTs; complejidad de 771 puntos con 5 módulos 'god' — EXCB103 (wmc 149, ncloc 1.292), EXCB102 (wmc 104, ncloc 1.250) y EXCB136 (wmc 116) — que concentran el riesgo de mantenimiento.",
+        "provenance": "inventory.counts + quality.measures + quality.god_classes"
+      },
+      {
+        "point": "Riesgo de seguridad HIGH confirmado y accionable: de 30 hallazgos SAST, 5 son HIGH confirmados — 1 inyección SQL real (EXCC001.Consulta: el WHERE digitado en CONSTRUCT se concatena directo al PREPARE) y 4 inyecciones de comandos shell (RUN nohup fglgo con r_sesion.sesion de ARG_VAL envuelto en comillas simples sin sanitizar, en EXCB001 x2, EXCB005 y EXCB007); otros 14 HIGH son latentes o de segundo orden (PREPARE concatenados y RUN con rutas de tablas de control).",
+        "provenance": "sast.findings (severity=HIGH, status=confirmed: 4gl-sql-string-concat EXCC001 Consulta + 4gl-run-shell-with-input EXCB001 L326/L382, EXCB005 L347, EXCB007 L306)"
+      },
+      {
+        "point": "Acoplamiento estructural que encarece mantenimiento y migración: 53 invocaciones a comandos del SO (sed/cut/dbload/cat/chmod/lp/nohup), 8 stored procedures de Informix (marca_cuenta, fn_saldo_dia_sie, fn_precio_dia, sp_sca_valida, entre otros), 3 bases de datos (safre_af, safre_seg, safre_tmp) y un shell externo NO versionado (/safre/est/shells/env_mail_gral.sh) invocado en 5 sitios para el envío de correos; el core 4GL no empaqueta dependencias terceras, por lo que el eje CVE-por-dependencia es N/A.",
+        "provenance": "modules4gl.counts (shell_commands=53, stored_procedures=8) + inventory.stack.databases + sast.findings (4gl-shell-script-path, 5 sitios)"
+      },
+      {
+        "point": "La seguridad aplicativa existente se sostiene en perfilamiento por privilegio y trazabilidad: SCA (Carga_Parametros_sca + sp_sca_valida) revalida sesión/privilegio/perfiles en cada COMMAND y captura con 15 privilegios catalogados (1796-1812, 3731-3734), y el manejo de errores es uniforme (STARTLOG en /safre/exc/logs + WHENEVER ERROR → sp_graba_logs_err en safre_seg); el escaneo de secrets en modo gitleaks no arrojó credenciales en el fuente (único hallazgo INFO: 3 correos corporativos hardcodeados en EXCB100).",
+        "provenance": "functional.privileges (15) + br.rules (BR-EXC-017, BR-EXC-018) + sast.scans + sast.findings (email-address-in-source)"
+      },
+      {
+        "point": "Recomendación central: cerrar primero los 5 HIGH confirmados con cambios puntuales de bajo esfuerzo (placeholders/EXECUTE USING y whitelist de sesión en los RUN) y evolucionar por estrangulamiento — encapsular el núcleo de diagnóstico/liquidación (EXCB136 + etapas batch de dis_ctrl_proceso) detrás de servicios — en lugar de un reemplazo big-bang que exigiría re-certificar el cálculo financiero (21 reglas de negocio, 8 SPs).",
+        "provenance": "sast.findings (5 HIGH confirmados) + remediation (este fact) + br.rules (21) + modules4gl.counts.stored_procedures (8)"
+      }
+    ]
+  },
+  "remediation": [
+    {
+      "action": "Cerrar la inyección SQL de EXCC001.Consulta: construir el WHERE del query-by-example con validación por campo y escapado de comillas (o migrar el CONSTRUCT a filtros tipados por campo); nunca concatenar cla_where directo al PREPARE.",
+      "impact": "alto",
+      "effort": "bajo",
+      "note": "Único hallazgo donde el usuario final controla la sintaxis del SQL ejecutado (captura de pantalla → PREPARE sin placeholders).",
+      "provenance": "sast.findings — 4gl-sql-string-concat, EXCC001.4gl L152/185/189 (FUNCTION Consulta), status=confirmed"
+    },
+    {
+      "action": "Sanitizar los argumentos que alimentan los RUN de lanzamiento batch: validar r_sesion.sesion y r_sesion.modulo contra whitelist [A-Za-z0-9_-] antes de cada 'nohup fglgo ...' (EXCB001 L326 y L382, EXCB005 L347, EXCB007 L306).",
+      "impact": "alto",
+      "effort": "bajo",
+      "note": "4 puntos de inyección de comandos confirmados; el folio digitado ya está mitigado por validación dígito-a-dígito en EXCB001.",
+      "provenance": "sast.findings — 4gl-run-shell-with-input, EXCB001.4gl L326-331 y L382-388, EXCB005.4gl L347-352, EXCB007.4gl L306-311 (status=confirmed)"
+    },
+    {
+      "action": "Parametrizar los PREPARE dinámicos restantes con '?' + EXECUTE USING en EXCB102 (L182, L197, L364, L381, L400, L414), EXCB103 (L301, L317) y EXCB106 (L151, L277, L293).",
+      "impact": "medio",
+      "effort": "medio",
+      "note": "11 hallazgos HIGH latentes: vectores de segundo orden vía valores de dis_ctrl_proceso/seg_modulo o coerción INTEGER; defensa en profundidad de bajo costo unitario.",
+      "provenance": "sast.findings — 4gl-sql-string-concat en EXCB102/EXCB103/EXCB106, status=latent"
+    },
+    {
+      "action": "Endurecer la ejecución shell de segundo orden: restringir seg_modulo.ruta_rescate/ruta_listados y dis_ctrl_proceso.parametro1/parametro2 a rutas/patrones validados al consumirse en RUN (ls/rm/sed/touch/cat/lp), y auditar quién puede escribir esas tablas de control.",
+      "impact": "medio",
+      "effort": "medio",
+      "note": "Explota solo si un administrador/tabla comprometida controla el valor; hoy el flujo es interno.",
+      "provenance": "sast.findings — 4gl-run-shell-with-input, EXCB001.4gl L217-244, EXCB102.4gl sed/touch/cd/rm/cat (consolidado 7+ sitios), EXCC001.4gl L321-322 (status=latent)"
+    },
+    {
+      "action": "Sustituir el 'chmod 777' por permisos de grupo restrictivos en los archivos de salida de EXCB103 (6 sitios) y fijar ownership del directorio de envío del archivo .DEV.",
+      "impact": "medio",
+      "effort": "bajo",
+      "note": "Salidas world-writable: cualquier usuario del host puede alterar el archivo de respuesta al instituto.",
+      "provenance": "sast.findings — 4gl-shell-world-permissions, EXCB103.4gl L274/275/358/497/953/1064 (status=confirmed)"
+    },
+    {
+      "action": "Traer al repositorio y revisar el shell externo /safre/est/shells/env_mail_gral.sh (5 sitios de invocación): versionarlo, eliminar la dependencia de ruta absoluta y validar sus argumentos (asunto/archivo/ruta/programa).",
+      "impact": "medio",
+      "effort": "bajo",
+      "note": "Script no versionado en el fuente, fuera del alcance de este análisis SAST: superficie ciega.",
+      "provenance": "sast.findings — 4gl-shell-script-path, EXCB100.4gl L409/416, EXCB102.4gl L1379, EXCB103.4gl L1077, EXCB106.4gl L533 (status=confirmed)"
+    },
+    {
+      "action": "Refactorizar los módulos god (EXCB103 wmc=149, EXCB102 wmc=104, EXCB136 wmc=116) extrayendo funciones por etapa del proceso (carga/separación/diagnóstico/respuesta), como prerrequisito de mantenibilidad y de cualquier opción de migración.",
+      "impact": "medio (deuda técnica)",
+      "effort": "alto",
+      "note": "La deuda no está cuantificada en horas: quality.json no expone debt_hours (ver client_questions).",
+      "provenance": "quality.god_classes — EXCB103.4gl, EXCB102.4gl, EXCB136.4gl"
+    },
+    {
+      "action": "Externalizar a configuración las 3 direcciones de correo hardcodeadas del bloque mailx de EXCB100 y confirmar la rotación de destinatarios.",
+      "impact": "bajo",
+      "effort": "bajo",
+      "note": "Fuga menor de contactos internos, no es credencial; valor ofuscado por confidencialidad.",
+      "provenance": "sast.findings — email-address-in-source, EXCB100.4gl L399-403 (severity=INFO, status=confirmed)"
+    }
+  ],
+  "modernization_options": [
+    {
+      "option": "Refactor in-place seguro sobre 4GL: remediación de hallazgos + modularización de god classes, manteniendo la plataforma Informix 4GL vigente",
+      "risk": "bajo",
+      "effort": "bajo-medio",
+      "description": "Cerrar los 5 HIGH confirmados y los vectores de segundo orden, documentar y modularizar por etapas de dis_ctrl_proceso, sin cambiar runtime ni esquema.",
+      "comment": "Único camino que no exige re-certificar de inmediato el cálculo financiero; habilita (y degrada el riesgo de) las opciones siguientes."
+    },
+    {
+      "option": "Encapsulamiento strangler: sustituir las puntas interactivas (EXCB001/EXCB005/EXCB007/EXCC001) por UI/servicio moderno que dispara los mismos batch 4GL vía API o cola",
+      "risk": "bajo-medio",
+      "effort": "medio",
+      "description": "Retira la superficie terminal (PROMPT/CONSTRUCT/MENU) y con ella la inyección SQL confirmada de EXCC001, conservando el núcleo batch probado y el esquema Informix.",
+      "comment": "Paso natural después de la remediación; los perfiles SCA (15 privilegios) se mapean a roles del nuevo frente."
+    },
+    {
+      "option": "Replatform por etapas: reescribir el núcleo batch (EXCB102/EXCB103/EXCB106/EXCB100 + librería EXCB136) en stack moderno de servicios y orquestador, conservando el esquema Informix de forma transitoria",
+      "risk": "medio-alto",
+      "effort": "alto",
+      "description": "El diagnóstico ya está aislado en EXCB136 (librería incluida por 2 programas) y las etapas 1-6 de dis_ctrl_proceso dan el corte natural por fases; exige paridad de 21 reglas de negocio, 8 SPs y conversiones de importes (centavos/millonésimos).",
+      "comment": "Máximo valor de modernización, pero condicionado al checkpoint humano de matriz de paridad del manifiesto; los 53 comandos shell (sed/cut/dbload) se rediseñan, no se portan."
+    },
+    {
+      "option": "Reemplazo por solución de mercado (COTS) del proceso de devoluciones/retiros en exceso",
+      "risk": "alto",
+      "effort": "alto",
+      "description": "Sustituir la función completa por un paquete del dominio AFORE/pensiones.",
+      "comment": "Riesgo de brecha funcional frente a reglas específicas observadas (diagnóstico parcial 04, convivencia de marcas 540/542, registro 08 sintético tras cambio de siefores, reverso con bloqueo por liquidación); evaluar solo con matriz de paridad formal."
+    }
+  ],
+  "client_questions": [
+    {
+      "question": "Glosario de negocio oficial del proceso EXC: definiciones del instituto para los diagnósticos 01/02/04, marcas de cuenta 540/542, subcuentas 1/2/4/5, y la etapa 7 de dis_ctrl_proceso que no aparece como flujo en estos fuentes — ¿se puede confirmar con documentación oficial?",
+      "evidence": "facts/br.json (BR-EXC-001 con [inferencia] sobre etapa 7; BR-EXC-021 catálogos) + input/Anexo 1. Formato Preguntas y Aclaraciones.xlsx"
+    },
+    {
+      "question": "Entorno productivo real: versión de Informix 4GL/fglgo, host /safre (permisos efectivos de /safre/est/shells y /safre/exc/logs) y contenido del shell externo env_mail_gral.sh, que no viene incluido en los fuentes entregados.",
+      "evidence": "facts/modules4gl.json (shell externo invocado en 5 sitios, ausente de src/AF009_pgmas) + facts/sast.json (4gl-shell-script-path)"
+    },
+    {
+      "question": "¿Existe un schedulador (cron/Control-M u otro) que lance EXCB102/EXCB106/EXCB103 directamente, además de los lanzamientos nohup desde las pantallas? Los actores 'operador/scheduler' de los casos de uso batch son inferidos.",
+      "evidence": "facts/usecases.json (precondiciones de UC-EXC-002, UC-EXC-005 y UC-EXC-006 con actor 'operador/scheduler')"
+    },
+    {
+      "question": "Población de usuarios, volúmenes y SLA del proceso: número de operadores back-office, frecuencia y tamaño típico de los lotes del instituto, y criticidad de los correos de cifras de control (excb002/excb003/excb006).",
+      "evidence": "facts/usecases.json (actores inferidos, sin volúmenes) + facts/br.json (BR-EXC-020 notificaciones)"
+    },
+    {
+      "question": "Clasificación de datos sensibles y retención: el archivo del instituto y las tablas cargadas contienen NSS y saldos (afi_mae_afiliado, exc_det_devpgo, safre_tmp:exc_devpgo_sdo) y los logs de error van a /safre/exc/logs — ¿qué política de datos aplica?",
+      "evidence": "facts/br.json (BR-EXC-006 NSS, BR-EXC-009 saldos por subcuenta, BR-EXC-018 STARTLOG)"
+    },
+    {
+      "question": "Catálogo vigente de privilegios SCA: confirmar con el equipo de seguridad los códigos de batch 3731 (EXCB100), 3732 (EXCB102), 3733 (EXCB106) y 3734 (EXCB103), marcados como inferidos en el análisis funcional.",
+      "evidence": "facts/functional.json (privileges 3731-3734 con [inferencia])"
+    },
+    {
+      "question": "Deuda técnica en horas: el fact de calidad no expone debt_hours (solo complejidad 771 y 5 god modules) — ¿se requiere una estimación formal de esfuerzo de remediación/refactor para priorizar el roadmap?",
+      "evidence": "facts/quality.json (measures: complexity=771, ncloc=6258; sin debt_hours)"
+    }
+  ]
+}

@@ -1,0 +1,874 @@
+{
+ "counts": {
+  "includes": 2,
+  "libraries": 1,
+  "modules": 9,
+  "shell_commands": 53,
+  "stored_procedures": [
+   "Carga_Parametros_sca",
+   "desmarca_cuenta",
+   "fn_precio_dia",
+   "fn_saldo_dia_sie",
+   "graba_log",
+   "marca_cuenta",
+   "sp_graba_logs_err",
+   "sp_sca_valida"
+  ]
+ },
+ "modules": [
+  {
+   "evidence": [
+    {
+     "file": "src/AF009_pgmas/EXCB001.4gl",
+     "line": 149
+    }
+   ],
+   "functions": [
+    {
+     "line": 149,
+     "name": "Lectura"
+    },
+    {
+     "line": 288,
+     "name": "Ejecuta_lectura"
+    },
+    {
+     "line": 343,
+     "name": "reverso"
+    },
+    {
+     "line": 397,
+     "name": "valida_folio_reverso"
+    },
+    {
+     "line": 470,
+     "name": "Sca_Valida"
+    },
+    {
+     "line": 567,
+     "name": "graba_logs_err"
+    },
+    {
+     "line": 642,
+     "name": "Graba_Log"
+    }
+   ],
+   "included_by": [],
+   "includes": [],
+   "kind": "program",
+   "loc": 673,
+   "name": "EXCB001.4gl",
+   "ncloc": 505,
+   "reports": [],
+   "shell_commands": [
+    {
+     "command": "ejecuta",
+     "line": 219
+    },
+    {
+     "command": "ejecuta",
+     "line": 244
+    },
+    {
+     "command": "ejecuta",
+     "line": 331
+    },
+    {
+     "command": "ejecuta                                         #temp",
+     "line": 388
+    }
+   ],
+   "stored_procedures_called": [
+    "Carga_Parametros_sca",
+    "fn_precio_dia",
+    "graba_log",
+    "sp_graba_logs_err",
+    "sp_sca_valida"
+   ]
+  },
+  {
+   "evidence": [
+    {
+     "file": "src/AF009_pgmas/EXCB005.4gl",
+     "line": 129
+    }
+   ],
+   "functions": [
+    {
+     "line": 129,
+     "name": "liquidacion"
+    },
+    {
+     "line": 268,
+     "name": "ValidarPrecios"
+    },
+    {
+     "line": 308,
+     "name": "ejecuta_liquidacion_rcv"
+    },
+    {
+     "line": 370,
+     "name": "Sca_Valida"
+    },
+    {
+     "line": 467,
+     "name": "graba_logs_err"
+    },
+    {
+     "line": 542,
+     "name": "Graba_Log"
+    }
+   ],
+   "included_by": [],
+   "includes": [],
+   "kind": "program",
+   "loc": 573,
+   "name": "EXCB005.4gl",
+   "ncloc": 427,
+   "reports": [],
+   "shell_commands": [
+    {
+     "command": "ejecuta",
+     "line": 352
+    }
+   ],
+   "stored_procedures_called": [
+    "Carga_Parametros_sca",
+    "fn_precio_dia",
+    "graba_log",
+    "sp_graba_logs_err",
+    "sp_sca_valida"
+   ]
+  },
+  {
+   "evidence": [
+    {
+     "file": "src/AF009_pgmas/EXCB007.4gl",
+     "line": 141
+    }
+   ],
+   "functions": [
+    {
+     "line": 141,
+     "name": "Lectura"
+    },
+    {
+     "line": 212,
+     "name": "ValidarPrecios"
+    },
+    {
+     "line": 252,
+     "name": "Ejecuta_lectura"
+    },
+    {
+     "line": 328,
+     "name": "Sca_Valida"
+    },
+    {
+     "line": 425,
+     "name": "graba_logs_err"
+    },
+    {
+     "line": 500,
+     "name": "Graba_Log"
+    }
+   ],
+   "included_by": [],
+   "includes": [],
+   "kind": "program",
+   "loc": 531,
+   "name": "EXCB007.4gl",
+   "ncloc": 399,
+   "reports": [],
+   "shell_commands": [
+    {
+     "command": "ejecuta",
+     "line": 311
+    }
+   ],
+   "stored_procedures_called": [
+    "Carga_Parametros_sca",
+    "fn_precio_dia",
+    "graba_log",
+    "sp_graba_logs_err",
+    "sp_sca_valida"
+   ]
+  },
+  {
+   "evidence": [
+    {
+     "file": "src/AF009_pgmas/EXCB100.4gl",
+     "line": 121
+    }
+   ],
+   "functions": [
+    {
+     "line": 121,
+     "name": "inicializa"
+    },
+    {
+     "line": 149,
+     "name": "reverso_desmarca"
+    },
+    {
+     "line": 206,
+     "name": "rever_exc_arch"
+    },
+    {
+     "line": 379,
+     "name": "Genera_rep"
+    },
+    {
+     "line": 392,
+     "name": "envia_mail"
+    },
+    {
+     "line": 473,
+     "name": "Sca_Valida"
+    },
+    {
+     "line": 570,
+     "name": "graba_logs_err"
+    },
+    {
+     "line": 645,
+     "name": "Graba_Log"
+    }
+   ],
+   "included_by": [],
+   "includes": [],
+   "kind": "program",
+   "loc": 676,
+   "name": "EXCB100.4gl",
+   "ncloc": 513,
+   "reports": [
+    "listado_ctas"
+   ],
+   "shell_commands": [
+    {
+     "command": "lejecuta",
+     "line": 416
+    }
+   ],
+   "stored_procedures_called": [
+    "Carga_Parametros_sca",
+    "desmarca_cuenta",
+    "graba_log",
+    "sp_graba_logs_err",
+    "sp_sca_valida"
+   ]
+  },
+  {
+   "evidence": [
+    {
+     "file": "src/AF009_pgmas/EXCB102.4gl",
+     "line": 165
+    }
+   ],
+   "functions": [
+    {
+     "line": 165,
+     "name": "inicio"
+    },
+    {
+     "line": 178,
+     "name": "Proceso"
+    },
+    {
+     "line": 236,
+     "name": "Proceso_principal"
+    },
+    {
+     "line": 273,
+     "name": "Inicializa"
+    },
+    {
+     "line": 280,
+     "name": "Ingresa_etapa"
+    },
+    {
+     "line": 320,
+     "name": "Separa_archivo"
+    },
+    {
+     "line": 358,
+     "name": "Actualiza_etapa"
+    },
+    {
+     "line": 396,
+     "name": "Actualiza_etapa_1"
+    },
+    {
+     "line": 428,
+     "name": "Sube_datos"
+    },
+    {
+     "line": 751,
+     "name": "ins_reg_08"
+    },
+    {
+     "line": 787,
+     "name": "actualiza_monto"
+    },
+    {
+     "line": 1017,
+     "name": "cif_con"
+    },
+    {
+     "line": 1375,
+     "name": "envia_mail"
+    },
+    {
+     "line": 1403,
+     "name": "Sca_Valida"
+    },
+    {
+     "line": 1500,
+     "name": "graba_logs_err"
+    },
+    {
+     "line": 1575,
+     "name": "Graba_Log"
+    }
+   ],
+   "included_by": [],
+   "includes": [
+    {
+     "file": "EXCB136.4gl"
+    }
+   ],
+   "kind": "program",
+   "loc": 1606,
+   "name": "EXCB102.4gl",
+   "ncloc": 1250,
+   "reports": [
+    "salida",
+    "salida1",
+    "salida2",
+    "r_report",
+    "p_report_cza",
+    "p_report_det"
+   ],
+   "shell_commands": [
+    {
+     "command": "lejecuta",
+     "line": 328
+    },
+    {
+     "command": "lejecuta",
+     "line": 333
+    },
+    {
+     "command": "lejecuta",
+     "line": 341
+    },
+    {
+     "command": "lejecuta",
+     "line": 345
+    },
+    {
+     "command": "lejecuta",
+     "line": 351
+    },
+    {
+     "command": "lejecuta",
+     "line": 450
+    },
+    {
+     "command": "lejecuta",
+     "line": 454
+    },
+    {
+     "command": "lejecuta",
+     "line": 458
+    },
+    {
+     "command": "lejecuta",
+     "line": 462
+    },
+    {
+     "command": "lejecuta",
+     "line": 586
+    },
+    {
+     "command": "lejecuta",
+     "line": 590
+    },
+    {
+     "command": "lejecuta",
+     "line": 596
+    },
+    {
+     "command": "lejecuta",
+     "line": 628
+    },
+    {
+     "command": "lejecuta",
+     "line": 635
+    },
+    {
+     "command": "lejecuta",
+     "line": 641
+    },
+    {
+     "command": "lejecuta",
+     "line": 647
+    },
+    {
+     "command": "lejecuta",
+     "line": 655
+    },
+    {
+     "command": "lejecuta",
+     "line": 663
+    },
+    {
+     "command": "lejecuta",
+     "line": 671
+    },
+    {
+     "command": "lejecuta",
+     "line": 679
+    },
+    {
+     "command": "lejecuta",
+     "line": 685
+    },
+    {
+     "command": "lejecuta",
+     "line": 691
+    },
+    {
+     "command": "lejecuta",
+     "line": 698
+    },
+    {
+     "command": "lejecuta",
+     "line": 707
+    },
+    {
+     "command": "lejecuta",
+     "line": 713
+    },
+    {
+     "command": "lejecuta",
+     "line": 717
+    },
+    {
+     "command": "lejecuta",
+     "line": 723
+    },
+    {
+     "command": "lejecuta",
+     "line": 731
+    },
+    {
+     "command": "lejecuta",
+     "line": 736
+    },
+    {
+     "command": "lejecuta",
+     "line": 1215
+    },
+    {
+     "command": "lejecuta",
+     "line": 1385
+    },
+    {
+     "command": "lejecuta",
+     "line": 1393
+    }
+   ],
+   "stored_procedures_called": [
+    "Carga_Parametros_sca",
+    "graba_log",
+    "sp_graba_logs_err",
+    "sp_sca_valida"
+   ]
+  },
+  {
+   "evidence": [
+    {
+     "file": "src/AF009_pgmas/EXCB103.4gl",
+     "line": 148
+    }
+   ],
+   "functions": [
+    {
+     "line": 148,
+     "name": "inicio"
+    },
+    {
+     "line": 204,
+     "name": "proceso"
+    },
+    {
+     "line": 294,
+     "name": "Actualiza_etapa"
+    },
+    {
+     "line": 332,
+     "name": "archc_ncbzdo"
+    },
+    {
+     "line": 364,
+     "name": "reg_02"
+    },
+    {
+     "line": 502,
+     "name": "obtiene_importe"
+    },
+    {
+     "line": 534,
+     "name": "llena_pre08"
+    },
+    {
+     "line": 542,
+     "name": "ctaPorCobrar08_001"
+    },
+    {
+     "line": 753,
+     "name": "ctaPorCobrar08_002"
+    },
+    {
+     "line": 893,
+     "name": "archc_dep"
+    },
+    {
+     "line": 958,
+     "name": "archc_sum"
+    },
+    {
+     "line": 985,
+     "name": "cif_con"
+    },
+    {
+     "line": 1069,
+     "name": "envia_mail"
+    },
+    {
+     "line": 1408,
+     "name": "Sca_Valida"
+    },
+    {
+     "line": 1505,
+     "name": "graba_logs_err"
+    },
+    {
+     "line": 1580,
+     "name": "Graba_Log"
+    }
+   ],
+   "included_by": [],
+   "includes": [
+    {
+     "file": "EXCB136.4gl"
+    }
+   ],
+   "kind": "program",
+   "loc": 1611,
+   "name": "EXCB103.4gl",
+   "ncloc": 1292,
+   "reports": [
+    "r_cza",
+    "r_det",
+    "r_dep",
+    "r_sum",
+    "r_cif_cza",
+    "r_cif_det"
+   ],
+   "shell_commands": [
+    {
+     "command": "lejecuta",
+     "line": 254
+    },
+    {
+     "command": "lejecuta",
+     "line": 272
+    },
+    {
+     "command": "lpermisos",
+     "line": 275
+    },
+    {
+     "command": "lejecuta",
+     "line": 279
+    },
+    {
+     "command": "lpermisos",
+     "line": 359
+    },
+    {
+     "command": "lpermisos",
+     "line": 498
+    },
+    {
+     "command": "lpermisos",
+     "line": 954
+    },
+    {
+     "command": "lpermisos",
+     "line": 981
+    },
+    {
+     "command": "lejecuta",
+     "line": 1059
+    },
+    {
+     "command": "lpermisos",
+     "line": 1065
+    },
+    {
+     "command": "lejecuta",
+     "line": 1083
+    }
+   ],
+   "stored_procedures_called": [
+    "Carga_Parametros_sca",
+    "graba_log",
+    "sp_graba_logs_err",
+    "sp_sca_valida"
+   ]
+  },
+  {
+   "evidence": [
+    {
+     "file": "src/AF009_pgmas/EXCB106.4gl",
+     "line": 138
+    }
+   ],
+   "functions": [
+    {
+     "line": 138,
+     "name": "inicializa"
+    },
+    {
+     "line": 147,
+     "name": "Proceso"
+    },
+    {
+     "line": 185,
+     "name": "Proceso_principal"
+    },
+    {
+     "line": 269,
+     "name": "Actualiza_etapa"
+    },
+    {
+     "line": 309,
+     "name": "cif_resumen"
+    },
+    {
+     "line": 428,
+     "name": "cif_con_imp"
+    },
+    {
+     "line": 521,
+     "name": "envia_mail"
+    },
+    {
+     "line": 704,
+     "name": "Sca_Valida"
+    },
+    {
+     "line": 801,
+     "name": "graba_logs_err"
+    },
+    {
+     "line": 876,
+     "name": "Graba_Log"
+    }
+   ],
+   "included_by": [],
+   "includes": [],
+   "kind": "program",
+   "loc": 907,
+   "name": "EXCB106.4gl",
+   "ncloc": 720,
+   "reports": [
+    "r_report",
+    "p_report_cza",
+    "p_report_det"
+   ],
+   "shell_commands": [
+    {
+     "command": "lejecuta",
+     "line": 517
+    },
+    {
+     "command": "lejecuta",
+     "line": 538
+    }
+   ],
+   "stored_procedures_called": [
+    "Carga_Parametros_sca",
+    "graba_log",
+    "sp_graba_logs_err",
+    "sp_sca_valida"
+   ]
+  },
+  {
+   "evidence": [
+    {
+     "file": "src/AF009_pgmas/EXCB136.4gl",
+     "line": 28
+    }
+   ],
+   "functions": [
+    {
+     "line": 28,
+     "name": "validacion"
+    },
+    {
+     "line": 225,
+     "name": "ObtenerPrecios"
+    },
+    {
+     "line": 265,
+     "name": "limpia_exc_devpgo_sdo"
+    },
+    {
+     "line": 274,
+     "name": "ingresa_sdo_tab_tmp"
+    },
+    {
+     "line": 363,
+     "name": "diag_por_movimiento"
+    },
+    {
+     "line": 534,
+     "name": "obtiene_diagnostico_final"
+    },
+    {
+     "line": 584,
+     "name": "insert_exc_devpgo_sdo"
+    },
+    {
+     "line": 634,
+     "name": "actualiza_reg"
+    },
+    {
+     "line": 657,
+     "name": "marca_sufi_parci"
+    },
+    {
+     "line": 732,
+     "name": "convivencia"
+    },
+    {
+     "line": 754,
+     "name": "des_marca_cuenta"
+    },
+    {
+     "line": 788,
+     "name": "des_marca"
+    }
+   ],
+   "included_by": [
+    {
+     "file": "src/AF009_pgmas/EXCB102.4gl",
+     "line": 134
+    },
+    {
+     "file": "src/AF009_pgmas/EXCB103.4gl",
+     "line": 118
+    }
+   ],
+   "includes": [],
+   "kind": "library",
+   "loc": 826,
+   "name": "EXCB136.4gl",
+   "ncloc": 653,
+   "reports": [],
+   "shell_commands": [],
+   "stored_procedures_called": [
+    "desmarca_cuenta",
+    "fn_saldo_dia_sie",
+    "marca_cuenta"
+   ]
+  },
+  {
+   "evidence": [
+    {
+     "file": "src/AF009_pgmas/EXCC001.4gl",
+     "line": 105
+    }
+   ],
+   "functions": [
+    {
+     "line": 105,
+     "name": "inicio"
+    },
+    {
+     "line": 117,
+     "name": "proceso"
+    },
+    {
+     "line": 140,
+     "name": "Inicializa"
+    },
+    {
+     "line": 144,
+     "name": "Consulta"
+    },
+    {
+     "line": 215,
+     "name": "Botones"
+    },
+    {
+     "line": 251,
+     "name": "Primero"
+    },
+    {
+     "line": 263,
+     "name": "Siguiente"
+    },
+    {
+     "line": 275,
+     "name": "Anterior"
+    },
+    {
+     "line": 287,
+     "name": "Ultimo"
+    },
+    {
+     "line": 299,
+     "name": "Impresion"
+    },
+    {
+     "line": 392,
+     "name": "Sca_Valida"
+    },
+    {
+     "line": 486,
+     "name": "graba_logs_err"
+    },
+    {
+     "line": 554,
+     "name": "Graba_Log"
+    }
+   ],
+   "included_by": [],
+   "includes": [],
+   "kind": "program",
+   "loc": 581,
+   "name": "EXCC001.4gl",
+   "ncloc": 441,
+   "reports": [
+    "rpt_tabcity"
+   ],
+   "shell_commands": [
+    {
+     "command": "g_lista",
+     "line": 322
+    }
+   ],
+   "stored_procedures_called": [
+    "Carga_Parametros_sca",
+    "graba_log",
+    "sp_graba_logs_err",
+    "sp_sca_valida"
+   ]
+  }
+ ]
+}

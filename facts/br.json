@@ -1,0 +1,524 @@
+{
+ "rules": [
+  {
+   "id": "BR-EXC-001",
+   "domain": "control",
+   "statement": "El flujo de la devolución de pagos en exceso (proceso_cod='EXC') se gobierna por etapas registradas en dis_ctrl_proceso: 1=lectura/carga del archivo (EXCB001/EXCB102), 2=separación del archivo, 3=carga a tablas históricas, 4=diagnóstico de devolución por importe (EXCB102→EXCB136), 5=liquidación RCV/VIVIENDA (EXCB005/EXCB106), 6=archivo de salida/respuesta (EXCB007/EXCB103). Cada etapa abre con INSERT (hora_inicial) y cierra con UPDATE dinámico (hora_final, folio, resultado); la etapa 7 existe además como bloqueante de reverso [inferencia: etapa de liquidación complementaria, no presente como flujo en estos fuentes].",
+   "status": "confirmed",
+   "evidence": [
+    {
+     "file": "src/AF009_pgmas/EXCB001.4gl",
+     "line": 296
+    },
+    {
+     "file": "src/AF009_pgmas/EXCB102.4gl",
+     "line": 254
+    },
+    {
+     "file": "src/AF009_pgmas/EXCB102.4gl",
+     "line": 257
+    },
+    {
+     "file": "src/AF009_pgmas/EXCB102.4gl",
+     "line": 267
+    },
+    {
+     "file": "src/AF009_pgmas/EXCB005.4gl",
+     "line": 318
+    },
+    {
+     "file": "src/AF009_pgmas/EXCB007.4gl",
+     "line": 276
+    },
+    {
+     "file": "src/AF009_pgmas/EXCB001.4gl",
+     "line": 411
+    },
+    {
+     "file": "src/AF009_pgmas/EXCB102.4gl",
+     "line": 280
+    },
+    {
+     "file": "src/AF009_pgmas/EXCB102.4gl",
+     "line": 358
+    }
+   ]
+  },
+  {
+   "id": "BR-EXC-002",
+   "domain": "proceso",
+   "statement": "Un archivo de devolución no puede procesarse dos veces: EXCB001 rechaza en pantalla nombres de archivo que ya tengan etapa 1 en dis_ctrl_proceso con el mismo parametro1, y EXCB102 detecta en carga el lote duplicado (misma fecha_creac_lote + consecutivo_dia en exc_cza_exceso) dejando gfolio=0 y resultado 'ESTE ARCHIVO YA HA SIDO PROCESADO'.",
+   "status": "confirmed",
+   "evidence": [
+    {
+     "file": "src/AF009_pgmas/EXCB001.4gl",
+     "line": 178
+    },
+    {
+     "file": "src/AF009_pgmas/EXCB001.4gl",
+     "line": 185
+    },
+    {
+     "file": "src/AF009_pgmas/EXCB102.4gl",
+     "line": 549
+    },
+    {
+     "file": "src/AF009_pgmas/EXCB102.4gl",
+     "line": 743
+    }
+   ]
+  },
+  {
+   "id": "BR-EXC-003",
+   "domain": "calculo",
+   "statement": "Antes de ejecutar carga (EXCB001), liquidación (EXCB005) o respuesta (EXCB007) se valida que existan precios del día por siefore con la función fn_precio_dia para el grupo 1 (RCV, con fecha de hoy) y el grupo 2 (vivienda, con fecha primer día del mes); si algún grupo no regresa precios, el programa muestra 'NO EXISTEN PRECIOS PARA GRUPO...' y termina (EXIT PROGRAM). Requisito RQ25372_PJF.",
+   "status": "confirmed",
+   "evidence": [
+    {
+     "file": "src/AF009_pgmas/EXCB001.4gl",
+     "line": 250
+    },
+    {
+     "file": "src/AF009_pgmas/EXCB005.4gl",
+     "line": 278
+    },
+    {
+     "file": "src/AF009_pgmas/EXCB007.4gl",
+     "line": 222
+    }
+   ]
+  },
+  {
+   "id": "BR-EXC-004",
+   "domain": "diagnostico",
+   "statement": "Diagnóstico por movimiento (EXCB136.diag_por_movimiento): para cada importe solicitado de una subcuenta, si el saldo disponible (imp_disponible) es >= al solicitado el diagnóstico es 1 (suficiente/aceptado) y se descuenta el importe del saldo; si el saldo es > 0 pero < al solicitado el diagnóstico es 4 (parcial), se libera el saldo disponible y el saldo queda en 0; si el saldo es <= 0 el diagnóstico es 2 (rechazado por falta de recursos).",
+   "status": "confirmed",
+   "evidence": [
+    {
+     "file": "src/AF009_pgmas/EXCB136.4gl",
+     "line": 363
+    },
+    {
+     "file": "src/AF009_pgmas/EXCB136.4gl",
+     "line": 413
+    },
+    {
+     "file": "src/AF009_pgmas/EXCB136.4gl",
+     "line": 419
+    },
+    {
+     "file": "src/AF009_pgmas/EXCB136.4gl",
+     "line": 424
+    }
+   ]
+  },
+  {
+   "id": "BR-EXC-005",
+   "domain": "diagnostico",
+   "statement": "Diagnóstico final por solicitud (EXCB136.obtiene_diagnostico_final): se toma MAX(diagnostico) de los movimientos del NSS/lote en safre_tmp:exc_devpgo_sdo; si el resultado es 2 (rechazado) pero al menos una subcuenta quedó como suficiente (1), la solicitud baja a parcial (4). En exc_det_devpgo se persiste como diag_devolucion: '01' aceptado, '04' parcial, '02' rechazado.",
+   "status": "confirmed",
+   "evidence": [
+    {
+     "file": "src/AF009_pgmas/EXCB136.4gl",
+     "line": 534
+    },
+    {
+     "file": "src/AF009_pgmas/EXCB136.4gl",
+     "line": 557
+    },
+    {
+     "file": "src/AF009_pgmas/EXCB136.4gl",
+     "line": 657
+    },
+    {
+     "file": "src/AF009_pgmas/EXCB136.4gl",
+     "line": 723
+    }
+   ]
+  },
+  {
+   "id": "BR-EXC-006",
+   "domain": "validacion",
+   "statement": "Las solicitudes de cuentas inexistentes se rechazan: si el NSS no existe en afi_mae_afiliado, la solicitud queda con diagnóstico 2 y código de rechazo 588.",
+   "status": "confirmed",
+   "evidence": [
+    {
+     "file": "src/AF009_pgmas/EXCB136.4gl",
+     "line": 92
+    },
+    {
+     "file": "src/AF009_pgmas/EXCB136.4gl",
+     "line": 103
+    }
+   ]
+  },
+  {
+   "id": "BR-EXC-007",
+   "domain": "validacion",
+   "statement": "Convivencia de marcas: antes de aceptar una solicitud se verifica en cta_convivencia/cta_act_marca que la cuenta no tenga una marca activa que conviva con la marca de entrada (540 para IMSS/clave 001, 542 para INFONAVIT/clave 002); si convive, la solicitud se rechaza con código 382.",
+   "status": "confirmed",
+   "evidence": [
+    {
+     "file": "src/AF009_pgmas/EXCB136.4gl",
+     "line": 112
+    },
+    {
+     "file": "src/AF009_pgmas/EXCB136.4gl",
+     "line": 117
+    },
+    {
+     "file": "src/AF009_pgmas/EXCB136.4gl",
+     "line": 732
+    },
+    {
+     "file": "src/AF009_pgmas/EXCB136.4gl",
+     "line": 740
+    }
+   ]
+  },
+  {
+   "id": "BR-EXC-008",
+   "domain": "proceso",
+   "statement": "Marcado/desmarcado de cuentas: las solicitudes aceptadas (01) o parciales (04) se marcan con el SP marca_cuenta (marca 540/542); si el marcado falla o la marca ya estaba activa sin poder aplicarse, la solicitud se rechaza con 382. Las cuentas que quedan rechazadas tras un nuevo diagnóstico se desmarcan con el SP desmarca_cuenta (EXCB136.des_marca_cuenta / EXCB106 al liquidar).",
+   "status": "confirmed",
+   "evidence": [
+    {
+     "file": "src/AF009_pgmas/EXCB136.4gl",
+     "line": 657
+    },
+    {
+     "file": "src/AF009_pgmas/EXCB136.4gl",
+     "line": 692
+    },
+    {
+     "file": "src/AF009_pgmas/EXCB136.4gl",
+     "line": 708
+    },
+    {
+     "file": "src/AF009_pgmas/EXCB136.4gl",
+     "line": 754
+    }
+   ]
+  },
+  {
+   "id": "BR-EXC-009",
+   "domain": "calculo",
+   "statement": "Los saldos por subcuenta y NSS se obtienen con el SP fn_saldo_dia_sie (fecha de valuación = hoy) y se registran como primer registro (id_aportante='SALDO_SBCTA') en safre_tmp:exc_devpgo_sdo; para la subcuenta 4 (vivienda) el importe disponible en pesos se toma del saldo en acciones.",
+   "status": "confirmed",
+   "evidence": [
+    {
+     "file": "src/AF009_pgmas/EXCB136.4gl",
+     "line": 274
+    },
+    {
+     "file": "src/AF009_pgmas/EXCB136.4gl",
+     "line": 312
+    },
+    {
+     "file": "src/AF009_pgmas/EXCB136.4gl",
+     "line": 338
+    }
+   ]
+  },
+  {
+   "id": "BR-EXC-010",
+   "domain": "calculo",
+   "statement": "Precios y conversión a acciones: el precio del día por siefore se obtiene de fn_precio_dia (grupos 1 y 3; el 2 se omite) y las acciones a devolver se calculan como importe disponible en pesos / precio. Para la siefore 11 (vivienda) el precio se sustituye por el de safre_ing:tc_exc_precio_viv a la fecha de valuación (RQ49796_JIF) y las acciones de vivienda se toman directamente del saldo.",
+   "status": "confirmed",
+   "evidence": [
+    {
+     "file": "src/AF009_pgmas/EXCB136.4gl",
+     "line": 225
+    },
+    {
+     "file": "src/AF009_pgmas/EXCB136.4gl",
+     "line": 246
+    },
+    {
+     "file": "src/AF009_pgmas/EXCB136.4gl",
+     "line": 584
+    },
+    {
+     "file": "src/AF009_pgmas/EXCB136.4gl",
+     "line": 620
+    }
+   ]
+  },
+  {
+   "id": "BR-EXC-011",
+   "domain": "calculo",
+   "statement": "Los importes del archivo de entrada vienen expresados en centavos (y las aplicaciones de vivienda en millonésimos): tras la carga con dbload, EXCB102.actualiza_monto divide todos los importes de exc_det_devpgo, exc_dep_devpgo y exc_sum_devpgo entre 100, y los números de aplicaciones de vivienda (num_viv_aport_pat, num_aiv_*) entre 1000000.",
+   "status": "confirmed",
+   "evidence": [
+    {
+     "file": "src/AF009_pgmas/EXCB102.4gl",
+     "line": 787
+    },
+    {
+     "file": "src/AF009_pgmas/EXCB102.4gl",
+     "line": 851
+    },
+    {
+     "file": "src/AF009_pgmas/EXCB102.4gl",
+     "line": 878
+    },
+    {
+     "file": "src/AF009_pgmas/EXCB102.4gl",
+     "line": 908
+    }
+   ]
+  },
+  {
+   "id": "BR-EXC-012",
+   "domain": "proceso",
+   "statement": "Tratamiento del registro 08 (depósitos/cuentas por cobrar) según la fecha de cambio de siefores leída del catálogo safre_ing:tc_cat_catalogo (appin_id=8, agrsm_clave=7, catsm_clave=1): si esa fecha es > hoy, se separa y carga el 08 del archivo y EXCB103 lo genera en la respuesta; si ya pasó, EXCB102 no carga el 08 del archivo (archivo vacío con touch) e inserta dos registros 08 sintéticos con ids 01544<fechalote>13711/13732 (ins_reg_08), y EXCB103 no genera dev_dep (Req 43365 TDF, 2019).",
+   "status": "confirmed",
+   "evidence": [
+    {
+     "file": "src/AF009_pgmas/EXCB102.4gl",
+     "line": 240
+    },
+    {
+     "file": "src/AF009_pgmas/EXCB102.4gl",
+     "line": 335
+    },
+    {
+     "file": "src/AF009_pgmas/EXCB102.4gl",
+     "line": 751
+    },
+    {
+     "file": "src/AF009_pgmas/EXCB103.4gl",
+     "line": 236
+    },
+    {
+     "file": "src/AF009_pgmas/EXCB103.4gl",
+     "line": 272
+    }
+   ]
+  },
+  {
+   "id": "BR-EXC-013",
+   "domain": "validacion",
+   "statement": "Validación del identificador de pago del registro 08 (EXCB102.Sube_datos): la posición 13 del id_pago debe ser '3' (entidad a devolver válida) y la posición 14 debe ser '7' u '8' (tipo de depósito válido); en caso contrario el proceso se cancela registrando en la etapa 3 'Proceso cancelado <ENTIDAD A DEVOLVER>/<TIPO DE DEPOSITO> invalida' y termina (EXIT PROGRAM).",
+   "status": "confirmed",
+   "evidence": [
+    {
+     "file": "src/AF009_pgmas/EXCB102.4gl",
+     "line": 512
+    },
+    {
+     "file": "src/AF009_pgmas/EXCB102.4gl",
+     "line": 525
+    }
+   ]
+  },
+  {
+   "id": "BR-EXC-014",
+   "domain": "proceso",
+   "statement": "El reverso de un folio solo procede si no hay liquidación: se bloquea cuando existen etapas 5 o 7 en dis_ctrl_proceso ('existe liquidación'), cuando no hay registros del folio en exc_cza_exceso (folio no cargado) o cuando ya hay registros en dis_cuenta ('existe liquidación de recursos').",
+   "status": "confirmed",
+   "evidence": [
+    {
+     "file": "src/AF009_pgmas/EXCB001.4gl",
+     "line": 397
+    },
+    {
+     "file": "src/AF009_pgmas/EXCB001.4gl",
+     "line": 411
+    },
+    {
+     "file": "src/AF009_pgmas/EXCB001.4gl",
+     "line": 428
+    },
+    {
+     "file": "src/AF009_pgmas/EXCB001.4gl",
+     "line": 449
+    }
+   ]
+  },
+  {
+   "id": "BR-EXC-015",
+   "domain": "proceso",
+   "statement": "Liquidación (EXCB106): solo se liquidan los movimientos con diagnóstico 1 o 4 e imp_dis_pesos > 0 de safre_tmp:exc_devpgo_sdo; cada movimiento se inserta en dis_cuenta con importes en pesos y acciones NEGADOS (cargo a la subcuenta), fechas de pago/valor/conversión = TODAY, estado '6', etiqueta '1' y precio de la acción usado; la marca 540/542 se retira con desmarca_cuenta. Antes de liquidar se re-diagnostica con EXCB136.validacion para usar precios del día.",
+   "status": "confirmed",
+   "evidence": [
+    {
+     "file": "src/AF009_pgmas/EXCB106.4gl",
+     "line": 193
+    },
+    {
+     "file": "src/AF009_pgmas/EXCB106.4gl",
+     "line": 207
+    },
+    {
+     "file": "src/AF009_pgmas/EXCB106.4gl",
+     "line": 210
+    },
+    {
+     "file": "src/AF009_pgmas/EXCB106.4gl",
+     "line": 232
+    }
+   ]
+  },
+  {
+   "id": "BR-EXC-016",
+   "domain": "proceso",
+   "statement": "El archivo de respuesta (EXCB103) tiene dos modos: si el folio ya fue liquidado (existen registros en dis_cuenta) NO se re-diagnostica y el reporte se titula 'DEFINITIVO' (solo se obtienen precios); si no está liquidado, se re-ejecuta EXCB136.validacion y el reporte se titula 'PREVIO'. El archivo final se llama <AAAAMMDD>.DEV (fecha de creación del lote) en la ruta de envío y se construye concatenando dev_cza + dev_det + dev_dep + dev_sum, con permisos 777.",
+   "status": "confirmed",
+   "evidence": [
+    {
+     "file": "src/AF009_pgmas/EXCB103.4gl",
+     "line": 160
+    },
+    {
+     "file": "src/AF009_pgmas/EXCB103.4gl",
+     "line": 172
+    },
+    {
+     "file": "src/AF009_pgmas/EXCB103.4gl",
+     "line": 176
+    },
+    {
+     "file": "src/AF009_pgmas/EXCB103.4gl",
+     "line": 286
+    },
+    {
+     "file": "src/AF009_pgmas/EXCB103.4gl",
+     "line": 297
+    }
+   ]
+  },
+  {
+   "id": "BR-EXC-017",
+   "domain": "seguridad",
+   "statement": "Perfilamiento SCA en cada interacción: al iniciar, cada programa carga parámetros con Carga_Parametros_sca (sesión, ip, usuario, perfiles, product_id 9=AF-009) y valida con sp_sca_valida la sesión/privilegio/perfiles en cada COMMAND y captura. Privilegios de entrada: 1796 EXCB001, 1800 EXCB005, 1806 EXCB007, 1810 EXCC001, 3731 EXCB100, 3732 EXCB102, 3733 EXCB106, 3734 EXCB103; de acción: 1797/1798 (EXCB001L/LX), 1802 (EXCB005RX), 1807/1808 (EXCB007L/LX), 1811/1812 (EXCC001C/CX). Un fallo de validación registra log y termina el programa con el código de salida del SP.",
+   "status": "confirmed",
+   "evidence": [
+    {
+     "file": "src/AF009_pgmas/EXCB001.4gl",
+     "line": 470
+    },
+    {
+     "file": "src/AF009_pgmas/EXCB001.4gl",
+     "line": 512
+    },
+    {
+     "file": "src/AF009_pgmas/EXCB005.4gl",
+     "line": 390
+    },
+    {
+     "file": "src/AF009_pgmas/EXCB007.4gl",
+     "line": 348
+    },
+    {
+     "file": "src/AF009_pgmas/EXCC001.4gl",
+     "line": 410
+    },
+    {
+     "file": "src/AF009_pgmas/EXCB102.4gl",
+     "line": 1423
+    }
+   ]
+  },
+  {
+   "id": "BR-EXC-018",
+   "domain": "seguridad",
+   "statement": "Manejo de errores uniforme: todos los programas abren STARTLOG en /safre/exc/logs/<PRG>.log y usan WHENEVER ERROR CALL graba_logs_err, que registra el error en el log de archivo, en la tabla de logs de safre_seg (SP sp_graba_logs_err) y muestra ventana al usuario en modo interactivo; el error terminal cierra el programa. Las trazas de negocio se escriben con el SP graba_log (firmas 2002/3001/3002).",
+   "status": "confirmed",
+   "evidence": [
+    {
+     "file": "src/AF009_pgmas/EXCB001.4gl",
+     "line": 90
+    },
+    {
+     "file": "src/AF009_pgmas/EXCB001.4gl",
+     "line": 91
+    },
+    {
+     "file": "src/AF009_pgmas/EXCB001.4gl",
+     "line": 567
+    },
+    {
+     "file": "src/AF009_pgmas/EXCB001.4gl",
+     "line": 642
+    }
+   ]
+  },
+  {
+   "id": "BR-EXC-019",
+   "domain": "proceso",
+   "statement": "La fecha de liquidación se asigna al día de la ejecución (fecha_liquidacion = TODAY). El código contiene además una validación residual 'FALTAN DIAS PARA LA LIQUIDACION' con una constante dias=15 y el primer día del mes [inferencia: vestigio de una regla de ventana de liquidación posterior al día 15 que hoy es inoperante porque compara hoy < TODAY].",
+   "status": "inferred",
+   "evidence": [
+    {
+     "file": "src/AF009_pgmas/EXCB005.4gl",
+     "line": 199
+    },
+    {
+     "file": "src/AF009_pgmas/EXCB005.4gl",
+     "line": 205
+    },
+    {
+     "file": "src/AF009_pgmas/EXCB005.4gl",
+     "line": 212
+    }
+   ]
+  },
+  {
+   "id": "BR-EXC-020",
+   "domain": "notificacion",
+   "statement": "Cifras de control y notificación por correo: al terminar cada proceso se generan informes en las rutas del módulo y se envían con el shell /safre/est/shells/env_mail_gral.sh: carga → excb002_cc.txt y excb002_cp.txt; respuesta → excb003_cc.txt; liquidación → excb6_rsmn.txt y excb006_cc.txt; reverso → CC_ReversoSIDECOIMSS_<DDMMYY>.txt. En EXCC001 la impresión se envía con lp a la impresora del sistema.",
+   "status": "confirmed",
+   "evidence": [
+    {
+     "file": "src/AF009_pgmas/EXCB102.4gl",
+     "line": 1375
+    },
+    {
+     "file": "src/AF009_pgmas/EXCB103.4gl",
+     "line": 1069
+    },
+    {
+     "file": "src/AF009_pgmas/EXCB106.4gl",
+     "line": 521
+    },
+    {
+     "file": "src/AF009_pgmas/EXCB100.4gl",
+     "line": 409
+    },
+    {
+     "file": "src/AF009_pgmas/EXCC001.4gl",
+     "line": 321
+    }
+   ]
+  },
+  {
+   "id": "BR-EXC-021",
+   "domain": "catalogo",
+   "statement": "Catálogos y dominios del negocio: entidad origen 001=IMSS y 002=INFONAVIT; subcuentas 1=RCV retiro, 2=RCV cesantía y vejez (cuenta patrón/worker), 5=cuota social, 4=aportación patronal de vivienda (siefore fija 11 en el diagnóstico); tipos de movimiento 540 (aportación EXC) y 545 (actualizaciones/rendimientos EXC y REN); marcas de cuenta 540 (IMSS) y 542 (INFONAVIT/vivienda); razón social de siefore desde safre_ing:tc_siefore_local; datos de la AFORE emisora desde tab_afore_local; cambio de siefores desde safre_ing:tc_cat_catalogo.",
+   "status": "confirmed",
+   "evidence": [
+    {
+     "file": "src/AF009_pgmas/EXCB136.4gl",
+     "line": 76
+    },
+    {
+     "file": "src/AF009_pgmas/EXCB136.4gl",
+     "line": 128
+    },
+    {
+     "file": "src/AF009_pgmas/EXCB136.4gl",
+     "line": 168
+    },
+    {
+     "file": "src/AF009_pgmas/EXCB102.4gl",
+     "line": 1063
+    },
+    {
+     "file": "src/AF009_pgmas/EXCB103.4gl",
+     "line": 607
+    }
+   ]
+  }
+ ]
+}

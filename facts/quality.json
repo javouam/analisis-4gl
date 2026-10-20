@@ -1,0 +1,50 @@
+{
+ "evidence": [
+  {
+   "file": "src/AF009_pgmas/EXCB001.4gl"
+  },
+  {
+   "file": "src/AF009_pgmas/EXCB0011.per"
+  },
+  {
+   "file": "src/AF009_pgmas/EXCB005.4gl"
+  }
+ ],
+ "god_classes": [
+  {
+   "class": "src/AF009_pgmas/EXCB103.4gl",
+   "loc": 1292,
+   "wmc": 149
+  },
+  {
+   "class": "src/AF009_pgmas/EXCB102.4gl",
+   "loc": 1250,
+   "wmc": 104
+  },
+  {
+   "class": "src/AF009_pgmas/EXCB106.4gl",
+   "loc": 720,
+   "wmc": 68
+  },
+  {
+   "class": "src/AF009_pgmas/EXCB136.4gl",
+   "loc": 653,
+   "wmc": 116
+  },
+  {
+   "class": "src/AF009_pgmas/EXCB100.4gl",
+   "loc": 513,
+   "wmc": 65
+  }
+ ],
+ "measures": {
+  "complexity": 771,
+  "ncloc": 6258
+ },
+ "tools": [
+  {
+   "name": "loc-by-extension (fallback scc)",
+   "version": "scc no reconoce dialecto 4GL — conteo directo"
+  }
+ ]
+}

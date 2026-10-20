@@ -1,0 +1,78 @@
+{
+ "$schema": "http://json-schema.org/draft-07/schema#",
+ "additionalProperties": false,
+ "properties": {
+  "dialect": {
+   "type": "string"
+  },
+  "edges": {
+   "items": {
+    "additionalProperties": false,
+    "properties": {
+     "from": {
+      "type": "string"
+     },
+     "refs": {
+      "items": {
+       "additionalProperties": false,
+       "properties": {
+        "file": {
+         "type": "string"
+        },
+        "line": {
+         "type": "integer"
+        }
+       },
+       "required": [
+        "file"
+       ],
+       "type": "object"
+      },
+      "minItems": 1,
+      "type": "array"
+     },
+     "to": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "from",
+     "to",
+     "refs"
+    ],
+    "type": "object"
+   },
+   "type": "array"
+  },
+  "nodes": {
+   "items": {
+    "additionalProperties": false,
+    "properties": {
+     "functions": {
+      "type": "integer"
+     },
+     "kind": {
+      "type": "string"
+     },
+     "name": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "name"
+    ],
+    "type": "object"
+   },
+   "type": "array"
+  },
+  "stats": {
+   "type": "object"
+  }
+ },
+ "required": [
+  "nodes",
+  "edges"
+ ],
+ "title": "callgraph facts (4GL)",
+ "type": "object"
+}

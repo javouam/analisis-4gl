@@ -1,0 +1,400 @@
+{
+ "results": [
+  {
+   "check_id": "4gl-prompt-without-validation",
+   "path": "src/AF009_pgmas/EXCB001.4gl",
+   "start": {
+    "line": 207
+   },
+   "end": {
+    "line": 207
+   },
+   "extra": {
+    "message": "PROMPT captura input de usuario — verificar que el valor fluya a SQL únicamente vía variables de PREPARE (placeholders ?), nunca por concatenación (cruzar con 4gl-sql-string-concat).",
+    "severity": "LOW",
+    "lines": "PROMPT \"Desea ejecutar el proceso [S/N] ...\" FOR opc"
+   }
+  },
+  {
+   "check_id": "4gl-prompt-without-validation",
+   "path": "src/AF009_pgmas/EXCB001.4gl",
+   "start": {
+    "line": 237
+   },
+   "end": {
+    "line": 237
+   },
+   "extra": {
+    "message": "PROMPT captura input de usuario — verificar que el valor fluya a SQL únicamente vía variables de PREPARE (placeholders ?), nunca por concatenación (cruzar con 4gl-sql-string-concat).",
+    "severity": "LOW",
+    "lines": "PROMPT \"NOMBRE DE ARCHIVO INCORRECTO\" FOR opc"
+   }
+  },
+  {
+   "check_id": "4gl-prompt-without-validation",
+   "path": "src/AF009_pgmas/EXCB001.4gl",
+   "start": {
+    "line": 355
+   },
+   "end": {
+    "line": 355
+   },
+   "extra": {
+    "message": "PROMPT captura input de usuario — verificar que el valor fluya a SQL únicamente vía variables de PREPARE (placeholders ?), nunca por concatenación (cruzar con 4gl-sql-string-concat).",
+    "severity": "LOW",
+    "lines": "PROMPT \"Digite numero de folio a reversar : \" FOR lfolio_cap"
+   }
+  },
+  {
+   "check_id": "4gl-prompt-without-validation",
+   "path": "src/AF009_pgmas/EXCB001.4gl",
+   "start": {
+    "line": 376
+   },
+   "end": {
+    "line": 376
+   },
+   "extra": {
+    "message": "PROMPT captura input de usuario — verificar que el valor fluya a SQL únicamente vía variables de PREPARE (placeholders ?), nunca por concatenación (cruzar con 4gl-sql-string-concat).",
+    "severity": "LOW",
+    "lines": "PROMPT \"Deseas realizar el reverso S/N: \" FOR  lresp"
+   }
+  },
+  {
+   "check_id": "4gl-prompt-without-validation",
+   "path": "src/AF009_pgmas/EXCB001.4gl",
+   "start": {
+    "line": 619
+   },
+   "end": {
+    "line": 619
+   },
+   "extra": {
+    "message": "PROMPT captura input de usuario — verificar que el valor fluya a SQL únicamente vía variables de PREPARE (placeholders ?), nunca por concatenación (cruzar con 4gl-sql-string-concat).",
+    "severity": "LOW",
+    "lines": "PROMPT \" Presione la tecla <ENTER> para continuar .... \" FOR CHAR op"
+   }
+  },
+  {
+   "check_id": "4gl-prompt-without-validation",
+   "path": "src/AF009_pgmas/EXCB005.4gl",
+   "start": {
+    "line": 250
+   },
+   "end": {
+    "line": 250
+   },
+   "extra": {
+    "message": "PROMPT captura input de usuario — verificar que el valor fluya a SQL únicamente vía variables de PREPARE (placeholders ?), nunca por concatenación (cruzar con 4gl-sql-string-concat).",
+    "severity": "LOW",
+    "lines": "PROMPT \"Desea ejecutar el proceso [S/N] ...\" FOR opc"
+   }
+  },
+  {
+   "check_id": "4gl-prompt-without-validation",
+   "path": "src/AF009_pgmas/EXCB005.4gl",
+   "start": {
+    "line": 519
+   },
+   "end": {
+    "line": 519
+   },
+   "extra": {
+    "message": "PROMPT captura input de usuario — verificar que el valor fluya a SQL únicamente vía variables de PREPARE (placeholders ?), nunca por concatenación (cruzar con 4gl-sql-string-concat).",
+    "severity": "LOW",
+    "lines": "PROMPT \" Presione la tecla <ENTER> para continuar .... \" FOR CHAR op"
+   }
+  },
+  {
+   "check_id": "4gl-prompt-without-validation",
+   "path": "src/AF009_pgmas/EXCB007.4gl",
+   "start": {
+    "line": 189
+   },
+   "end": {
+    "line": 189
+   },
+   "extra": {
+    "message": "PROMPT captura input de usuario — verificar que el valor fluya a SQL únicamente vía variables de PREPARE (placeholders ?), nunca por concatenación (cruzar con 4gl-sql-string-concat).",
+    "severity": "LOW",
+    "lines": "PROMPT \"Desea ejecutar el proceso [S/N] ...\" FOR opc"
+   }
+  },
+  {
+   "check_id": "4gl-prompt-without-validation",
+   "path": "src/AF009_pgmas/EXCB007.4gl",
+   "start": {
+    "line": 477
+   },
+   "end": {
+    "line": 477
+   },
+   "extra": {
+    "message": "PROMPT captura input de usuario — verificar que el valor fluya a SQL únicamente vía variables de PREPARE (placeholders ?), nunca por concatenación (cruzar con 4gl-sql-string-concat).",
+    "severity": "LOW",
+    "lines": "PROMPT \" Presione la tecla <ENTER> para continuar .... \" FOR CHAR op"
+   }
+  },
+  {
+   "check_id": "4gl-prompt-without-validation",
+   "path": "src/AF009_pgmas/EXCB100.4gl",
+   "start": {
+    "line": 622
+   },
+   "end": {
+    "line": 622
+   },
+   "extra": {
+    "message": "PROMPT captura input de usuario — verificar que el valor fluya a SQL únicamente vía variables de PREPARE (placeholders ?), nunca por concatenación (cruzar con 4gl-sql-string-concat).",
+    "severity": "LOW",
+    "lines": "PROMPT \" Presione la tecla <ENTER> para continuar .... \" FOR CHAR op"
+   }
+  },
+  {
+   "check_id": "4gl-sql-string-concat",
+   "path": "src/AF009_pgmas/EXCB102.4gl",
+   "start": {
+    "line": 182
+   },
+   "end": {
+    "line": 182
+   },
+   "extra": {
+    "message": "SQL construido por concatenación/interpolación (LET de string SQL con || o con variables de entrada) — riesgo de inyección SQL en 4GL.",
+    "severity": "HIGH",
+    "lines": "LET gcla_sel = \" SELECT MAX(hora_inicial) \","
+   }
+  },
+  {
+   "check_id": "4gl-sql-string-concat",
+   "path": "src/AF009_pgmas/EXCB102.4gl",
+   "start": {
+    "line": 197
+   },
+   "end": {
+    "line": 197
+   },
+   "extra": {
+    "message": "SQL construido por concatenación/interpolación (LET de string SQL con || o con variables de entrada) — riesgo de inyección SQL en 4GL.",
+    "severity": "HIGH",
+    "lines": "LET gcla_sel = \" SELECT * \","
+   }
+  },
+  {
+   "check_id": "4gl-sql-string-concat",
+   "path": "src/AF009_pgmas/EXCB102.4gl",
+   "start": {
+    "line": 364
+   },
+   "end": {
+    "line": 364
+   },
+   "extra": {
+    "message": "SQL construido por concatenación/interpolación (LET de string SQL con || o con variables de entrada) — riesgo de inyección SQL en 4GL.",
+    "severity": "HIGH",
+    "lines": "LET gcla_sel = \" SELECT MAX(hora_inicial) \","
+   }
+  },
+  {
+   "check_id": "4gl-sql-string-concat",
+   "path": "src/AF009_pgmas/EXCB102.4gl",
+   "start": {
+    "line": 381
+   },
+   "end": {
+    "line": 381
+   },
+   "extra": {
+    "message": "SQL construido por concatenación/interpolación (LET de string SQL con || o con variables de entrada) — riesgo de inyección SQL en 4GL.",
+    "severity": "HIGH",
+    "lines": "LET gcla_sel = \" UPDATE dis_ctrl_proceso \","
+   }
+  },
+  {
+   "check_id": "4gl-sql-string-concat",
+   "path": "src/AF009_pgmas/EXCB102.4gl",
+   "start": {
+    "line": 400
+   },
+   "end": {
+    "line": 400
+   },
+   "extra": {
+    "message": "SQL construido por concatenación/interpolación (LET de string SQL con || o con variables de entrada) — riesgo de inyección SQL en 4GL.",
+    "severity": "HIGH",
+    "lines": "LET gcla_sel = \" SELECT MAX(hora_inicial) \","
+   }
+  },
+  {
+   "check_id": "4gl-sql-string-concat",
+   "path": "src/AF009_pgmas/EXCB102.4gl",
+   "start": {
+    "line": 414
+   },
+   "end": {
+    "line": 414
+   },
+   "extra": {
+    "message": "SQL construido por concatenación/interpolación (LET de string SQL con || o con variables de entrada) — riesgo de inyección SQL en 4GL.",
+    "severity": "HIGH",
+    "lines": "LET gcla_sel = \" UPDATE dis_ctrl_proceso \","
+   }
+  },
+  {
+   "check_id": "4gl-prompt-without-validation",
+   "path": "src/AF009_pgmas/EXCB102.4gl",
+   "start": {
+    "line": 1552
+   },
+   "end": {
+    "line": 1552
+   },
+   "extra": {
+    "message": "PROMPT captura input de usuario — verificar que el valor fluya a SQL únicamente vía variables de PREPARE (placeholders ?), nunca por concatenación (cruzar con 4gl-sql-string-concat).",
+    "severity": "LOW",
+    "lines": "PROMPT \" Presione la tecla <ENTER> para continuar .... \" FOR CHAR op"
+   }
+  },
+  {
+   "check_id": "4gl-sql-string-concat",
+   "path": "src/AF009_pgmas/EXCB103.4gl",
+   "start": {
+    "line": 301
+   },
+   "end": {
+    "line": 301
+   },
+   "extra": {
+    "message": "SQL construido por concatenación/interpolación (LET de string SQL con || o con variables de entrada) — riesgo de inyección SQL en 4GL.",
+    "severity": "HIGH",
+    "lines": "LET lcla_sel = \" SELECT MAX(hora_inicial) \","
+   }
+  },
+  {
+   "check_id": "4gl-sql-string-concat",
+   "path": "src/AF009_pgmas/EXCB103.4gl",
+   "start": {
+    "line": 317
+   },
+   "end": {
+    "line": 317
+   },
+   "extra": {
+    "message": "SQL construido por concatenación/interpolación (LET de string SQL con || o con variables de entrada) — riesgo de inyección SQL en 4GL.",
+    "severity": "HIGH",
+    "lines": "LET lcla_sel = \" UPDATE dis_ctrl_proceso \","
+   }
+  },
+  {
+   "check_id": "4gl-prompt-without-validation",
+   "path": "src/AF009_pgmas/EXCB103.4gl",
+   "start": {
+    "line": 1557
+   },
+   "end": {
+    "line": 1557
+   },
+   "extra": {
+    "message": "PROMPT captura input de usuario — verificar que el valor fluya a SQL únicamente vía variables de PREPARE (placeholders ?), nunca por concatenación (cruzar con 4gl-sql-string-concat).",
+    "severity": "LOW",
+    "lines": "PROMPT \" Presione la tecla <ENTER> para continuar .... \" FOR CHAR op"
+   }
+  },
+  {
+   "check_id": "4gl-sql-string-concat",
+   "path": "src/AF009_pgmas/EXCB106.4gl",
+   "start": {
+    "line": 151
+   },
+   "end": {
+    "line": 151
+   },
+   "extra": {
+    "message": "SQL construido por concatenación/interpolación (LET de string SQL con || o con variables de entrada) — riesgo de inyección SQL en 4GL.",
+    "severity": "HIGH",
+    "lines": "LET cla_sel = \" SELECT * \","
+   }
+  },
+  {
+   "check_id": "4gl-sql-string-concat",
+   "path": "src/AF009_pgmas/EXCB106.4gl",
+   "start": {
+    "line": 277
+   },
+   "end": {
+    "line": 277
+   },
+   "extra": {
+    "message": "SQL construido por concatenación/interpolación (LET de string SQL con || o con variables de entrada) — riesgo de inyección SQL en 4GL.",
+    "severity": "HIGH",
+    "lines": "LET lcla_sel = \" SELECT MAX(hora_inicial) \","
+   }
+  },
+  {
+   "check_id": "4gl-sql-string-concat",
+   "path": "src/AF009_pgmas/EXCB106.4gl",
+   "start": {
+    "line": 293
+   },
+   "end": {
+    "line": 293
+   },
+   "extra": {
+    "message": "SQL construido por concatenación/interpolación (LET de string SQL con || o con variables de entrada) — riesgo de inyección SQL en 4GL.",
+    "severity": "HIGH",
+    "lines": "LET lcla_sel = \" UPDATE dis_ctrl_proceso \","
+   }
+  },
+  {
+   "check_id": "4gl-prompt-without-validation",
+   "path": "src/AF009_pgmas/EXCB106.4gl",
+   "start": {
+    "line": 853
+   },
+   "end": {
+    "line": 853
+   },
+   "extra": {
+    "message": "PROMPT captura input de usuario — verificar que el valor fluya a SQL únicamente vía variables de PREPARE (placeholders ?), nunca por concatenación (cruzar con 4gl-sql-string-concat).",
+    "severity": "LOW",
+    "lines": "PROMPT \" Presione la tecla <ENTER> para continuar .... \" FOR CHAR op"
+   }
+  },
+  {
+   "check_id": "4gl-sql-string-concat",
+   "path": "src/AF009_pgmas/EXCC001.4gl",
+   "start": {
+    "line": 185
+   },
+   "end": {
+    "line": 185
+   },
+   "extra": {
+    "message": "SQL construido por concatenación/interpolación (LET de string SQL con || o con variables de entrada) — riesgo de inyección SQL en 4GL.",
+    "severity": "HIGH",
+    "lines": "LET sel_where = \"SELECT * FROM dis_ctrl_proceso WHERE \","
+   }
+  },
+  {
+   "check_id": "4gl-prompt-without-validation",
+   "path": "src/AF009_pgmas/EXCC001.4gl",
+   "start": {
+    "line": 532
+   },
+   "end": {
+    "line": 532
+   },
+   "extra": {
+    "message": "PROMPT captura input de usuario — verificar que el valor fluya a SQL únicamente vía variables de PREPARE (placeholders ?), nunca por concatenación (cruzar con 4gl-sql-string-concat).",
+    "severity": "LOW",
+    "lines": "PROMPT \" Presione la tecla <ENTER> para continuar .... \" FOR CHAR op"
+   }
+  }
+ ],
+ "errors": [],
+ "meta": {
+  "engine": "tools/pattern_scan.py (local regex engine, semgrep generic-mode equivalent)",
+  "note": "host sin semgrep/docker — sustitución documentada en AGENTS.md §4.2",
+  "rules_file": "tools/semgrep-4gl.yml"
+ }
+}

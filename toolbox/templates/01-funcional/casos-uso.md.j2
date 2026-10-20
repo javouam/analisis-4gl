@@ -1,0 +1,35 @@
+# Casos de uso — {{ f.get('inventory', {}).get('app', {}).get('name', nd) }}
+
+{% set ucs = f.get('usecases') %}
+{% set brs = f.get('br') %}
+{% if ucs and ucs.usecases %}
+{% for uc in ucs.usecases %}
+## {{ uc.id }} — {{ uc.name }}
+
+**Actores:** {{ uc.actors | join(', ') if uc.actors else nd }} · **Pantalla:** {{ uc.screen or nd }} · **Correo:** {{ uc.mail_template or nd }}
+
+**Flujo principal:**
+{% for step in uc.main %}
+{{ loop.index ~ '. ' ~ (('_' ~ step.actor ~ ':_ ') if step.actor else '') ~ step.step ~ ((' → ' ~ step.system) if step.system else '') }}
+{% endfor %}
+
+{% if uc.alternates %}
+**Alternos:** {% for a in uc.alternates %}{{ a.id or loop.index }}) {{ a.trigger }} ({{ a.message or nd }}) {% endfor %}
+{% endif %}
+**Postcondiciones:** {{ uc.postconditions | join('; ') if uc.postconditions else nd }}
+**Reglas:** {{ uc.rules | join(', ') if uc.rules else nd }}
+
+{% endfor %}
+{% else %}
+> {{ nd }} — sin facts/usecases.json
+{% endif %}
+
+## Reglas de negocio ({{ brs.rules | length if brs and brs.rules else 0 }})
+
+{% if brs and brs.rules %}
+| ID | Dominio | Regla | Estado |
+|---|---|---|---|
+{% for br in brs.rules %}
+| {{ br.id }} | {{ br.domain }} | {{ br.statement }} | {{ br.status }} |
+{% endfor %}
+{% endif %}

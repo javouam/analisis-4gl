@@ -1,0 +1,140 @@
+{
+ "$schema": "http://json-schema.org/draft-07/schema#",
+ "additionalProperties": false,
+ "properties": {
+  "counts": {
+   "type": "object"
+  },
+  "modules": {
+   "items": {
+    "additionalProperties": false,
+    "properties": {
+     "evidence": {
+      "items": {
+       "additionalProperties": false,
+       "properties": {
+        "file": {
+         "type": "string"
+        },
+        "line": {
+         "type": "integer"
+        }
+       },
+       "required": [
+        "file"
+       ],
+       "type": "object"
+      },
+      "minItems": 1,
+      "type": "array"
+     },
+     "functions": {
+      "items": {
+       "additionalProperties": false,
+       "properties": {
+        "line": {
+         "type": "integer"
+        },
+        "name": {
+         "type": "string"
+        }
+       },
+       "required": [
+        "name",
+        "line"
+       ],
+       "type": "object"
+      },
+      "type": "array"
+     },
+     "included_by": {
+      "items": {
+       "additionalProperties": false,
+       "properties": {
+        "file": {
+         "type": "string"
+        },
+        "line": {
+         "type": "integer"
+        }
+       },
+       "required": [
+        "file"
+       ],
+       "type": "object"
+      },
+      "type": "array"
+     },
+     "includes": {
+      "items": {
+       "additionalProperties": false,
+       "properties": {
+        "file": {
+         "type": "string"
+        }
+       },
+       "required": [
+        "file"
+       ],
+       "type": "object"
+      },
+      "type": "array"
+     },
+     "kind": {
+      "type": "string"
+     },
+     "loc": {
+      "type": "integer"
+     },
+     "name": {
+      "type": "string"
+     },
+     "ncloc": {
+      "type": "integer"
+     },
+     "reports": {
+      "items": {
+       "type": "string"
+      },
+      "type": "array"
+     },
+     "shell_commands": {
+      "items": {
+       "additionalProperties": false,
+       "properties": {
+        "command": {
+         "type": "string"
+        },
+        "line": {
+         "type": "integer"
+        }
+       },
+       "required": [
+        "command"
+       ],
+       "type": "object"
+      },
+      "type": "array"
+     },
+     "stored_procedures_called": {
+      "items": {
+       "type": "string"
+      },
+      "type": "array"
+     }
+    },
+    "required": [
+     "name",
+     "evidence"
+    ],
+    "type": "object"
+   },
+   "type": "array"
+  }
+ },
+ "required": [
+  "modules"
+ ],
+ "title": "internal modules/includes facts (4gl)",
+ "type": "object"
+}

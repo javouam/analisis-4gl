@@ -1,0 +1,17 @@
+# Inventario técnico — {{ f.get('inventory', {}).get('app', {}).get('name', nd) }}
+
+{% set inv = f.get('inventory') %}
+{% if inv %}
+| Atributo | Valor |
+|---|---|---|
+| Empaquetado | {{ inv.app.packaging }} |
+| Lenguaje | {{ inv.stack.languages | join(', ') if inv.stack and inv.stack.languages else nd }} |
+| Framework | {{ inv.stack.framework if inv.stack else nd }} |
+| BDs | {{ inv.stack.databases | join(', ') if inv.stack and inv.stack.databases else nd }} |
+
+**Módulos:** {{ inv.counts.programs if inv.counts and inv.counts.programs is defined else (inv.app.modules | length) }} programa(s) · {{ inv.counts.forms if inv.counts and inv.counts.forms is defined else nd }} form(s) · {{ inv.counts.functions if inv.counts and inv.counts.functions is defined else nd }} función(es) · {{ inv.counts.lines_total if inv.counts and inv.counts.lines_total is defined else nd }} líneas
+
+**Librerías terceras:** {{ inv.libs | selectattr('scope','equalto','third-party') | list | length if inv.libs else 'N/A — core 4GL sin dependencias empaquetadas' }}{% if inv.libs %} de {{ inv.libs | length }} (internas {{ inv.libs | selectattr('scope','equalto','internal') | list | length }}){% endif %}
+{% else %}
+> {{ nd }} — sin facts/inventory.json
+{% endif %}

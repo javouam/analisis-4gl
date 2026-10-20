@@ -1,0 +1,438 @@
+{
+ "menu_source": "Navegación 4GL por MENU/COMMAND (sin descriptores externos): MENU 'PROCESOS BATCH' en src/AF009_pgmas/EXCB001.4gl:117 (Lectura/Reverso/Salida) y src/AF009_pgmas/EXCB007.4gl:116 (Archivo/Salida); MENU 'CATALOGO CONTROL PROCESO' en src/AF009_pgmas/EXCC001.4gl:124 (Consulta/Salir) con submenú de navegación 'Ingreso a botones' en src/AF009_pgmas/EXCC001.4gl:217 (Primero/Siguiente/Anterior/Ultimo/Impresion/saLir). EXCB005 no tiene MENU: ejecuta directo la captura de liquidación al abrir la ventana (src/AF009_pgmas/EXCB005.4gl:113). Nota: inventory.counts.menu_commands=12 cuenta los COMMAND clásicos; el COMMAND KEY(\"L\") \"saLir\" (EXCC001.4gl:240) usa sintaxis con KEY y no es contado por el extractor, por lo que aquí se listan 13 opciones.",
+ "options": [
+  {
+   "id": "EXCB001-CMD-1",
+   "title": "Lectura",
+   "screen": "EXCB0011.per",
+   "privileges": {
+    "execute": "1797 (EXCB001L); ejecución del proceso: 1798 (EXCB001LX)"
+   },
+   "evidence": [
+    {
+     "file": "src/AF009_pgmas/EXCB001.4gl",
+     "line": 118
+    }
+   ]
+  },
+  {
+   "id": "EXCB001-CMD-2",
+   "title": "Reverso",
+   "screen": "PROMPT 'Digite numero de folio a reversar' en ventana vtna_reverso (src/AF009_pgmas/EXCB001.4gl:353-376) sobre el form EXCB0011",
+   "privileges": {
+    "execute": "1797 (EXCB001L)"
+   },
+   "evidence": [
+    {
+     "file": "src/AF009_pgmas/EXCB001.4gl",
+     "line": 125
+    }
+   ]
+  },
+  {
+   "id": "EXCB001-CMD-3",
+   "title": "Salida",
+   "screen": "terminal",
+   "evidence": [
+    {
+     "file": "src/AF009_pgmas/EXCB001.4gl",
+     "line": 131
+    }
+   ]
+  },
+  {
+   "id": "EXCB007-CMD-1",
+   "title": "Archivo",
+   "screen": "EXCB0071.per",
+   "privileges": {
+    "execute": "1807 (EXCB007L); ejecución: 1808 (EXCB007LX)"
+   },
+   "evidence": [
+    {
+     "file": "src/AF009_pgmas/EXCB007.4gl",
+     "line": 117
+    }
+   ]
+  },
+  {
+   "id": "EXCB007-CMD-2",
+   "title": "Salida",
+   "screen": "terminal",
+   "evidence": [
+    {
+     "file": "src/AF009_pgmas/EXCB007.4gl",
+     "line": 124
+    }
+   ]
+  },
+  {
+   "id": "EXCC001-CMD-1",
+   "title": "Consulta",
+   "screen": "EXCC0011.per",
+   "privileges": {
+    "execute": "1811 (EXCC001C)"
+   },
+   "evidence": [
+    {
+     "file": "src/AF009_pgmas/EXCC001.4gl",
+     "line": 125
+    }
+   ]
+  },
+  {
+   "id": "EXCC001-CMD-2",
+   "title": "Salir",
+   "screen": "terminal",
+   "evidence": [
+    {
+     "file": "src/AF009_pgmas/EXCC001.4gl",
+     "line": 131
+    }
+   ]
+  },
+  {
+   "id": "EXCC001-CMD-3",
+   "title": "Primero",
+   "screen": "EXCC0011.per (navegación del cursor scroll sobre dis_ctrl_proceso)",
+   "evidence": [
+    {
+     "file": "src/AF009_pgmas/EXCC001.4gl",
+     "line": 218
+    }
+   ]
+  },
+  {
+   "id": "EXCC001-CMD-4",
+   "title": "Siguiente",
+   "screen": "EXCC0011.per (navegación del cursor scroll sobre dis_ctrl_proceso)",
+   "evidence": [
+    {
+     "file": "src/AF009_pgmas/EXCC001.4gl",
+     "line": 222
+    }
+   ]
+  },
+  {
+   "id": "EXCC001-CMD-5",
+   "title": "Anterior",
+   "screen": "EXCC0011.per (navegación del cursor scroll sobre dis_ctrl_proceso)",
+   "evidence": [
+    {
+     "file": "src/AF009_pgmas/EXCC001.4gl",
+     "line": 226
+    }
+   ]
+  },
+  {
+   "id": "EXCC001-CMD-6",
+   "title": "Ultimo",
+   "screen": "EXCC0011.per (navegación del cursor scroll sobre dis_ctrl_proceso)",
+   "evidence": [
+    {
+     "file": "src/AF009_pgmas/EXCC001.4gl",
+     "line": 230
+    }
+   ]
+  },
+  {
+   "id": "EXCC001-CMD-7",
+   "title": "Impresion",
+   "screen": "EXCC0011.per + REPORT rpt_tabcity a ruta_listados",
+   "privileges": {
+    "execute": "1812 (EXCC001CX)"
+   },
+   "evidence": [
+    {
+     "file": "src/AF009_pgmas/EXCC001.4gl",
+     "line": 234
+    }
+   ]
+  },
+  {
+   "id": "EXCC001-CMD-8",
+   "title": "saLir (KEY L)",
+   "screen": "terminal",
+   "evidence": [
+    {
+     "file": "src/AF009_pgmas/EXCC001.4gl",
+     "line": 240
+    }
+   ]
+  }
+ ],
+ "privileges": [
+  {
+   "code": "1796",
+   "description": "EXCB001 — privilegio de entrada al programa de devolución de pagos en exceso (batch terminal)"
+  },
+  {
+   "code": "1797",
+   "description": "EXCB001L — comando Lectura/Reverso del menú PROCESOS BATCH"
+  },
+  {
+   "code": "1798",
+   "description": "EXCB001LX — ejecución del proceso de lectura (confirmación S/N)"
+  },
+  {
+   "code": "1800",
+   "description": "EXCB005 — privilegio de entrada al programa de parámetros de liquidación"
+  },
+  {
+   "code": "1802",
+   "description": "EXCB005RX — ejecución de la liquidación RCV/VIVIENDA (confirmación S/N)"
+  },
+  {
+   "code": "1806",
+   "description": "EXCB007 — privilegio de entrada al programa de archivo de respuesta"
+  },
+  {
+   "code": "1807",
+   "description": "EXCB007L — comando Archivo del menú PROCESOS BATCH"
+  },
+  {
+   "code": "1808",
+   "description": "EXCB007LX — ejecución de la generación del archivo de respuesta (confirmación S/N)"
+  },
+  {
+   "code": "1810",
+   "description": "EXCC001 — privilegio de entrada al catálogo de control de proceso"
+  },
+  {
+   "code": "1811",
+   "description": "EXCC001C — comando Consulta del catálogo de control de proceso"
+  },
+  {
+   "code": "1812",
+   "description": "EXCC001CX — impresión del listado del catálogo de control de proceso"
+  },
+  {
+   "code": "3731",
+   "description": "EXCB100 — privilegio del proceso batch de reverso de carga [inferencia: batch lanzado por nohup desde EXCB001]"
+  },
+  {
+   "code": "3732",
+   "description": "EXCB102 — privilegio del proceso batch de carga y provisión [inferencia: batch lanzado por nohup desde EXCB001]"
+  },
+  {
+   "code": "3733",
+   "description": "EXCB106 — privilegio del proceso batch de liquidación [inferencia: batch lanzado por nohup desde EXCB005]"
+  },
+  {
+   "code": "3734",
+   "description": "EXCB103 — privilegio del proceso batch de archivo de respuesta [inferencia: batch lanzado por nohup desde EXCB007]"
+  }
+ ],
+ "screens": [
+  {
+   "file": "src/AF009_pgmas/EXCB0011.per",
+   "kind": "form",
+   "title": "EXCB001 — LECTURA DE ARCHIVO Y PROCESO (ventana 'EXCB001 DEV. DE PAG. EN EXCESO PROCESO BATCH LIB. DE TERMINAL')",
+   "fields": [
+    {
+     "id": "nombre_archivo",
+     "type": "CHAR",
+     "maxlength": 18
+    }
+   ],
+   "evidence": [
+    {
+     "file": "src/AF009_pgmas/EXCB0011.per",
+     "line": 24
+    },
+    {
+     "file": "src/AF009_pgmas/EXCB001.4gl",
+     "line": 109
+    },
+    {
+     "file": "src/AF009_pgmas/EXCB001.4gl",
+     "line": 167
+    }
+   ]
+  },
+  {
+   "file": "src/AF009_pgmas/EXCB0051.per",
+   "kind": "form",
+   "title": "EXCB005 — LIQUIDACION DE RCV Y VIVIENDA (ventana 'EXCB005 DEVOLUCION DE PAGOS EN EXCESO')",
+   "fields": [
+    {
+     "id": "folio",
+     "type": "INTEGER"
+    },
+    {
+     "id": "fecha_liquidacion",
+     "type": "DATE",
+     "readonly": true
+    }
+   ],
+   "evidence": [
+    {
+     "file": "src/AF009_pgmas/EXCB0051.per",
+     "line": 24
+    },
+    {
+     "file": "src/AF009_pgmas/EXCB0051.per",
+     "line": 25
+    },
+    {
+     "file": "src/AF009_pgmas/EXCB005.4gl",
+     "line": 109
+    },
+    {
+     "file": "src/AF009_pgmas/EXCB005.4gl",
+     "line": 135
+    }
+   ]
+  },
+  {
+   "file": "src/AF009_pgmas/EXCB0071.per",
+   "kind": "form",
+   "title": "EXCB007 — ARCHIVO DE RESPUESTA A PROCESAR (ventana 'EXCB007 DEV. DE PAG. EN EXCESO PROCESO LIB. DE TERMINAL')",
+   "fields": [
+    {
+     "id": "folio",
+     "type": "INTEGER"
+    }
+   ],
+   "evidence": [
+    {
+     "file": "src/AF009_pgmas/EXCB0071.per",
+     "line": 24
+    },
+    {
+     "file": "src/AF009_pgmas/EXCB007.4gl",
+     "line": 108
+    },
+    {
+     "file": "src/AF009_pgmas/EXCB007.4gl",
+     "line": 147
+    }
+   ]
+  },
+  {
+   "file": "src/AF009_pgmas/EXCC0011.per",
+   "kind": "form",
+   "title": "EXCC001 — CATALOGO DE CONTROL PROCESO (tabla dis_ctrl_proceso)",
+   "fields": [
+    {
+     "id": "fecha_proceso",
+     "type": "DATE"
+    },
+    {
+     "id": "proceso_cod",
+     "type": "CHAR"
+    },
+    {
+     "id": "etapa_cod",
+     "type": "SMALLINT"
+    },
+    {
+     "id": "hora_inicial",
+     "type": "CHAR(8)"
+    },
+    {
+     "id": "hora_final",
+     "type": "CHAR(8)"
+    },
+    {
+     "id": "parametro1",
+     "type": "CHAR"
+    },
+    {
+     "id": "parametro2",
+     "type": "CHAR"
+    },
+    {
+     "id": "parametro3",
+     "type": "DECIMAL"
+    },
+    {
+     "id": "parametro4",
+     "type": "DATE"
+    },
+    {
+     "id": "parametro5",
+     "type": "CHAR"
+    },
+    {
+     "id": "folio",
+     "type": "INTEGER"
+    },
+    {
+     "id": "resultado",
+     "type": "CHAR"
+    },
+    {
+     "id": "usuario",
+     "type": "CHAR(8)"
+    }
+   ],
+   "buttons": [
+    {
+     "label": "Primero",
+     "handler": "EXCC001.Primero (FETCH FIRST)"
+    },
+    {
+     "label": "Siguiente",
+     "handler": "EXCC001.Siguiente (FETCH NEXT)"
+    },
+    {
+     "label": "Anterior",
+     "handler": "EXCC001.Anterior (FETCH PREVIOUS)"
+    },
+    {
+     "label": "Ultimo",
+     "handler": "EXCC001.Ultimo (FETCH LAST)"
+    },
+    {
+     "label": "Impresion",
+     "handler": "EXCC001.Impresion (REPORT rpt_tabcity + lp)"
+    },
+    {
+     "label": "saLir (tecla L)",
+     "handler": "EXIT MENU de EXCC001.Botones"
+    }
+   ],
+   "evidence": [
+    {
+     "file": "src/AF009_pgmas/EXCC0011.per",
+     "line": 25
+    },
+    {
+     "file": "src/AF009_pgmas/EXCC0011.per",
+     "line": 37
+    },
+    {
+     "file": "src/AF009_pgmas/EXCC001.4gl",
+     "line": 146
+    },
+    {
+     "file": "src/AF009_pgmas/EXCC001.4gl",
+     "line": 153
+    }
+   ]
+  },
+  {
+   "file": "src/AF009_pgmas/EXCB001.4gl",
+   "kind": "prompt",
+   "title": "PROMPT de confirmación de proceso: 'Desea ejecutar el proceso [S/N] ...' (también en EXCB005.4gl:250 y EXCB007.4gl:189) y PROMPT de folio a reversar 'Digite numero de folio a reversar :' (EXCB001.4gl:355)",
+   "evidence": [
+    {
+     "file": "src/AF009_pgmas/EXCB001.4gl",
+     "line": 207
+    },
+    {
+     "file": "src/AF009_pgmas/EXCB001.4gl",
+     "line": 355
+    },
+    {
+     "file": "src/AF009_pgmas/EXCB005.4gl",
+     "line": 250
+    },
+    {
+     "file": "src/AF009_pgmas/EXCB007.4gl",
+     "line": 189
+    }
+   ]
+  }
+ ]
+}

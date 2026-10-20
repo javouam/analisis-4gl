@@ -1,0 +1,18 @@
+# Módulos e includes 4GL — {{ f.get('inventory', {}).get('app', {}).get('name', nd) }}
+
+{% set m = f.get('modules4gl') %}
+{% if m and m.modules %}
+**Módulos ({{ m.modules | length }}):** programas {{ m.modules | selectattr('kind','equalto','program') | list | length }} · librerías {{ m.modules | selectattr('kind','equalto','library') | list | length }}
+
+| Módulo | Tipo | Líneas | Funciones | Includes | Incluido por | SPs llamados | Shell |
+|---|---|---|---|---|---|---|---|
+{% for mod in m.modules %}
+| {{ mod.name }} | {{ mod.kind }} | {{ mod.ncloc }} | {{ mod.functions | length }} | {{ mod.includes | map(attribute='file') | join(', ') or '—' }} | {{ mod.included_by | map(attribute='file') | join(', ') or '—' }} | {{ mod.stored_procedures_called | join(', ') or '—' }} | {{ mod.shell_commands | length if mod.shell_commands else 0 }} |
+{% endfor %}
+
+{% if m.counts %}
+**Totales:** {{ m.counts.includes }} include(s) GLOBALS · {{ m.counts.shell_commands }} comando(s) shell RUN · SPs: {{ m.counts.stored_procedures | join(', ') }}
+{% endif %}
+{% else %}
+> {{ nd }} — sin facts/modules4gl.json
+{% endif %}

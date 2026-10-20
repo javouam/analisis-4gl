@@ -1,0 +1,93 @@
+{
+ "$schema": "http://json-schema.org/draft-07/schema#",
+ "additionalProperties": false,
+ "properties": {
+  "findings": {
+   "items": {
+    "additionalProperties": false,
+    "properties": {
+     "evidence": {
+      "items": {
+       "additionalProperties": false,
+       "properties": {
+        "file": {
+         "type": "string"
+        },
+        "line": {
+         "type": "integer"
+        }
+       },
+       "required": [
+        "file"
+       ],
+       "type": "object"
+      },
+      "minItems": 1,
+      "type": "array"
+     },
+     "justification": {
+      "type": "string"
+     },
+     "rule": {
+      "type": "string"
+     },
+     "severity": {
+      "enum": [
+       "CRITICAL",
+       "HIGH",
+       "MEDIUM",
+       "LOW",
+       "INFO"
+      ]
+     },
+     "status": {
+      "enum": [
+       "confirmed",
+       "refuted",
+       "needs_validation",
+       "latent"
+      ]
+     },
+     "target": {
+      "type": "string"
+     },
+     "tool": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "tool",
+     "rule",
+     "severity",
+     "target",
+     "status",
+     "evidence"
+    ],
+    "type": "object"
+   },
+   "type": "array"
+  },
+  "scans": {
+   "items": {
+    "properties": {
+     "report": {
+      "type": "string"
+     },
+     "scope": {
+      "type": "string"
+     },
+     "tool": {
+      "type": "string"
+     }
+    },
+    "type": "object"
+   },
+   "type": "array"
+  }
+ },
+ "required": [
+  "findings"
+ ],
+ "title": "sast/secrets facts",
+ "type": "object"
+}

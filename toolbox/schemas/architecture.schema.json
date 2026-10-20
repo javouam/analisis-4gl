@@ -1,0 +1,88 @@
+{
+ "$schema": "http://json-schema.org/draft-07/schema#",
+ "additionalProperties": false,
+ "properties": {
+  "diagrams": {
+   "items": {
+    "properties": {
+     "file": {
+      "type": "string"
+     },
+     "generated_by": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "file",
+     "generated_by"
+    ],
+    "type": "object"
+   },
+   "type": "array"
+  },
+  "god_classes": {
+   "items": {
+    "properties": {
+     "cbo": {
+      "type": "integer"
+     },
+     "class": {
+      "type": "string"
+     },
+     "loc": {
+      "type": "integer"
+     },
+     "wmc": {
+      "type": "number"
+     }
+    },
+    "required": [
+     "class"
+    ],
+    "type": "object"
+   },
+   "type": "array"
+  },
+  "graphs": {
+   "items": {
+    "properties": {
+     "edges": {
+      "type": "integer"
+     },
+     "nodes": {
+      "type": "integer"
+     },
+     "tool": {
+      "type": "string"
+     }
+    },
+    "type": "object"
+   },
+   "type": "array"
+  },
+  "package_edges": {
+   "items": {
+    "properties": {
+     "from": {
+      "type": "string"
+     },
+     "imports": {
+      "type": "integer"
+     },
+     "to": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "from",
+     "to",
+     "imports"
+    ],
+    "type": "object"
+   },
+   "type": "array"
+  }
+ },
+ "title": "architecture facts",
+ "type": "object"
+}

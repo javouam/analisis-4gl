@@ -1,0 +1,397 @@
+{
+ "findings": [
+  {
+   "tool": "semgrep-4gl (pattern_scan.py)",
+   "rule": "4gl-sql-string-concat",
+   "severity": "HIGH",
+   "target": "src/AF009_pgmas/EXCC001.4gl (FUNCTION Consulta)",
+   "status": "confirmed",
+   "evidence": [
+    {"file": "src/AF009_pgmas/EXCC001.4gl", "line": 152},
+    {"file": "src/AF009_pgmas/EXCC001.4gl", "line": 185},
+    {"file": "src/AF009_pgmas/EXCC001.4gl", "line": 189}
+   ],
+   "justification": "Inyección SQL real: CONSTRUCT cla_where (L152-157) captura filtros digitados por el usuario en la pantalla de consulta y el string resultante se concatena directo a 'SELECT * FROM dis_ctrl_proceso WHERE ' (L185) para PREPARE query (L189) sin placeholders ni EXECUTE USING. El usuario controla el contenido del WHERE completo (sintaxis, no solo valores)."
+  },
+  {
+   "tool": "semgrep-4gl (pattern_scan.py)",
+   "rule": "4gl-sql-string-concat",
+   "severity": "HIGH",
+   "target": "src/AF009_pgmas/EXCB102.4gl L182 (FUNCTION Proceso, SELECT MAX)",
+   "status": "latent",
+   "evidence": [
+    {"file": "src/AF009_pgmas/EXCB102.4gl", "line": 182},
+    {"file": "src/AF009_pgmas/EXCB102.4gl", "line": 188}
+   ],
+   "justification": "Concatenación real hacia PREPARE (sin placeholders), pero los valores son ghoy=TODAY (L174) y literales; no hay input de usuario en el flujo batch. Vector de segundo orden si la fuente llegara a ser externa. Remediar parametrizando."
+  },
+  {
+   "tool": "semgrep-4gl (pattern_scan.py)",
+   "rule": "4gl-sql-string-concat",
+   "severity": "HIGH",
+   "target": "src/AF009_pgmas/EXCB102.4gl L197 (FUNCTION Proceso, SELECT *)",
+   "status": "latent",
+   "evidence": [
+    {"file": "src/AF009_pgmas/EXCB102.4gl", "line": 197},
+    {"file": "src/AF009_pgmas/EXCB102.4gl", "line": 204}
+   ],
+   "justification": "Concatena ghoy (TODAY) y ghora_max (valor obtenido de un SELECT previo a dis_ctrl_proceso, L182-192) hacia PREPARE claexe2 (L204). Sin input de usuario directo; vector de segundo orden vía valor de BD. Parametrizar como defensa en profundidad."
+  },
+  {
+   "tool": "semgrep-4gl (pattern_scan.py)",
+   "rule": "4gl-sql-string-concat",
+   "severity": "HIGH",
+   "target": "src/AF009_pgmas/EXCB102.4gl L364 (FUNCTION Actualiza_etapa, SELECT MAX)",
+   "status": "latent",
+   "evidence": [
+    {"file": "src/AF009_pgmas/EXCB102.4gl", "line": 364},
+    {"file": "src/AF009_pgmas/EXCB102.4gl", "line": 370}
+   ],
+   "justification": "Concatena letapa_cod y ghoy hacia PREPARE claexe3 (L370). letapa_cod llega como constante en la llamada CALL Actualiza_etapa(1,...) (L228); ghoy=TODAY. No explotable en flujo actual."
+  },
+  {
+   "tool": "semgrep-4gl (pattern_scan.py)",
+   "rule": "4gl-sql-string-concat",
+   "severity": "HIGH",
+   "target": "src/AF009_pgmas/EXCB102.4gl L381 (FUNCTION Actualiza_etapa, UPDATE)",
+   "status": "latent",
+   "evidence": [
+    {"file": "src/AF009_pgmas/EXCB102.4gl", "line": 381},
+    {"file": "src/AF009_pgmas/EXCB102.4gl", "line": 389}
+   ],
+   "justification": "UPDATE concatenando lhora_final=TIME, gfolio (numérico interno), lresultado (string armado por el programa) y ghora_max (BD) hacia PREPARE claexe4 (L389) + EXECUTE. Valores internos/de sistema; sin input de usuario."
+  },
+  {
+   "tool": "semgrep-4gl (pattern_scan.py)",
+   "rule": "4gl-sql-string-concat",
+   "severity": "HIGH",
+   "target": "src/AF009_pgmas/EXCB102.4gl L400 (FUNCTION Actualiza_etapa_1, SELECT MAX)",
+   "status": "latent",
+   "evidence": [
+    {"file": "src/AF009_pgmas/EXCB102.4gl", "line": 400},
+    {"file": "src/AF009_pgmas/EXCB102.4gl", "line": 407}
+   ],
+   "justification": "Concatena vetapa_cod (constante en llamada) y ghoy hacia PREPARE claexe5 (L407). No explotable en flujo actual."
+  },
+  {
+   "tool": "semgrep-4gl (pattern_scan.py)",
+   "rule": "4gl-sql-string-concat",
+   "severity": "HIGH",
+   "target": "src/AF009_pgmas/EXCB102.4gl L414 (FUNCTION Actualiza_etapa_1, UPDATE)",
+   "status": "latent",
+   "evidence": [
+    {"file": "src/AF009_pgmas/EXCB102.4gl", "line": 414},
+    {"file": "src/AF009_pgmas/EXCB102.4gl", "line": 421}
+   ],
+   "justification": "UPDATE concatenando gfolio, ghoy, ghora_max (BD) hacia PREPARE claexe6 (L421). Valores internos; vector de segundo orden vía ghora_max."
+  },
+  {
+   "tool": "semgrep-4gl (pattern_scan.py)",
+   "rule": "4gl-sql-string-concat",
+   "severity": "HIGH",
+   "target": "src/AF009_pgmas/EXCB103.4gl L301 (FUNCTION Actualiza_etapa, SELECT MAX)",
+   "status": "latent",
+   "evidence": [
+    {"file": "src/AF009_pgmas/EXCB103.4gl", "line": 301},
+    {"file": "src/AF009_pgmas/EXCB103.4gl", "line": 307}
+   ],
+   "justification": "Concatena gfolio (numérico interno del proceso batch) y letapa_cod hacia PREPARE claexe3 (L307). Sin input de usuario directo."
+  },
+  {
+   "tool": "semgrep-4gl (pattern_scan.py)",
+   "rule": "4gl-sql-string-concat",
+   "severity": "HIGH",
+   "target": "src/AF009_pgmas/EXCB103.4gl L317 (FUNCTION Actualiza_etapa, UPDATE)",
+   "status": "latent",
+   "evidence": [
+    {"file": "src/AF009_pgmas/EXCB103.4gl", "line": 317},
+    {"file": "src/AF009_pgmas/EXCB103.4gl", "line": 325}
+   ],
+   "justification": "UPDATE concatenando lhora_final=TIME, lresultado (interno), gfolio, ghora_max (BD) hacia PREPARE claexe4 (L325). Valores internos/de sistema."
+  },
+  {
+   "tool": "semgrep-4gl (pattern_scan.py)",
+   "rule": "4gl-sql-string-concat",
+   "severity": "HIGH",
+   "target": "src/AF009_pgmas/EXCB106.4gl L151 (FUNCTION Proceso, SELECT *)",
+   "status": "latent",
+   "evidence": [
+    {"file": "src/AF009_pgmas/EXCB106.4gl", "line": 118},
+    {"file": "src/AF009_pgmas/EXCB106.4gl", "line": 151},
+    {"file": "src/AF009_pgmas/EXCB106.4gl", "line": 157}
+   ],
+   "justification": "Concatena vparametro2 = ARG_VAL(2) (L118, argumento externo del proceso) hacia PREPARE claexe2 (L157). La variable está DECLARE INTEGER (L36): la coerción 4GL rechaza en runtime cadenas no numéricas, acotando el payload a números — patrón real no explotable en flujo actual. Parametrizar igualmente."
+  },
+  {
+   "tool": "semgrep-4gl (pattern_scan.py)",
+   "rule": "4gl-sql-string-concat",
+   "severity": "HIGH",
+   "target": "src/AF009_pgmas/EXCB106.4gl L277 (SELECT MAX)",
+   "status": "latent",
+   "evidence": [
+    {"file": "src/AF009_pgmas/EXCB106.4gl", "line": 277},
+    {"file": "src/AF009_pgmas/EXCB106.4gl", "line": 283}
+   ],
+   "justification": "Concatena lfolio/letapa_cod internos hacia PREPARE claexe6 (L283). Sin input de usuario."
+  },
+  {
+   "tool": "semgrep-4gl (pattern_scan.py)",
+   "rule": "4gl-sql-string-concat",
+   "severity": "HIGH",
+   "target": "src/AF009_pgmas/EXCB106.4gl L293 (UPDATE dis_ctrl_proceso)",
+   "status": "latent",
+   "evidence": [
+    {"file": "src/AF009_pgmas/EXCB106.4gl", "line": 293},
+    {"file": "src/AF009_pgmas/EXCB106.4gl", "line": 302}
+   ],
+   "justification": "UPDATE concatenando lfolio, lhora_final=TIME, lresultado (interno), ghora_max (BD) hacia PREPARE claexe7 (L302). Valores internos/de sistema."
+  },
+  {
+   "tool": "code-review (brecha del motor local)",
+   "rule": "4gl-run-shell-with-input",
+   "severity": "HIGH",
+   "target": "src/AF009_pgmas/EXCB001.4gl L326-331 (lanzamiento nohup EXCB102)",
+   "status": "confirmed",
+   "evidence": [
+    {"file": "src/AF009_pgmas/EXCB001.4gl", "line": 326},
+    {"file": "src/AF009_pgmas/EXCB001.4gl", "line": 328},
+    {"file": "src/AF009_pgmas/EXCB001.4gl", "line": 331},
+    {"file": "src/AF009_pgmas/EXCB001.4gl", "line": 484}
+   ],
+   "justification": "RUN ejecuta con comando armado por concatenación: 'cd ',vch_modulo_uri,';nohup fglgo EXCB102 ',\"'\",r_sesion.sesion CLIPPED,\"' \",r_sesion.modulo. r_sesion.sesion proviene de ARG_VAL (L484-486: vch_sesion = ARG_VAL(num_args-1)) — argumento externo del proceso, solo CLIPPED y envuelto en comillas simples SIN sanitizar: una comilla simple o metacaracter shell en la sesión rompe el quoting e inyecta comandos. Regla no disparada por pattern_scan.py (su regex espera ','/'||' tras RUN en la MISMA línea; el comando se arma en LET multiline) — hallazgo por revisión manual."
+  },
+  {
+   "tool": "code-review (brecha del motor local)",
+   "rule": "4gl-run-shell-with-input",
+   "severity": "HIGH",
+   "target": "src/AF009_pgmas/EXCB001.4gl L382-388 (lanzamiento nohup EXCB100/reverso)",
+   "status": "confirmed",
+   "evidence": [
+    {"file": "src/AF009_pgmas/EXCB001.4gl", "line": 382},
+    {"file": "src/AF009_pgmas/EXCB001.4gl", "line": 384},
+    {"file": "src/AF009_pgmas/EXCB001.4gl", "line": 388},
+    {"file": "src/AF009_pgmas/EXCB001.4gl", "line": 362}
+   ],
+   "justification": "RUN ejecuta con nohup fglgo EXCB100 + lfolio + r_sesion.sesion (ARG_VAL, sin sanitizar, misma superficie que L326). El folio digitado en PROMPT (L355) SÍ está mitigado por validación dígito-a-dígito NOT MATCHES \"[0-9]\" (L361-368); el vector restante es la sesión/módulo por argumento. Mismo gap del motor local."
+  },
+  {
+   "tool": "code-review (brecha del motor local)",
+   "rule": "4gl-run-shell-with-input",
+   "severity": "HIGH",
+   "target": "src/AF009_pgmas/EXCB005.4gl L347-352 (lanzamiento nohup EXCB106)",
+   "status": "confirmed",
+   "evidence": [
+    {"file": "src/AF009_pgmas/EXCB005.4gl", "line": 347},
+    {"file": "src/AF009_pgmas/EXCB005.4gl", "line": 350},
+    {"file": "src/AF009_pgmas/EXCB005.4gl", "line": 352}
+   ],
+   "justification": "RUN ejecuta con 'cd ',vch_modulo_uri,';nohup fglgo EXCB106 ',parametro,\" '\",r_sesion.sesion CLIPPED,\"' \",r_sesion.modulo. parametro es constante \"RCV\" (L312) y g_reg.folio viene del form EXCB0051 con TYPE INTEGER, pero r_sesion.sesion (ARG_VAL, CLIPPED, comillas simples sin sanitizar) mantiene la superficie de inyección de comandos. Gap del motor local."
+  },
+  {
+   "tool": "code-review (brecha del motor local)",
+   "rule": "4gl-run-shell-with-input",
+   "severity": "HIGH",
+   "target": "src/AF009_pgmas/EXCB007.4gl L306-311 (lanzamiento nohup EXCB103)",
+   "status": "confirmed",
+   "evidence": [
+    {"file": "src/AF009_pgmas/EXCB007.4gl", "line": 306},
+    {"file": "src/AF009_pgmas/EXCB007.4gl", "line": 309},
+    {"file": "src/AF009_pgmas/EXCB007.4gl", "line": 311}
+   ],
+   "justification": "RUN ejecuta con nohup fglgo EXCB103 + g_reg.folio (form EXCB0071 TYPE INTEGER) + r_sesion.sesion (ARG_VAL, comillas simples sin sanitizar) + r_sesion.modulo. Misma superficie y mismo gap del motor local."
+  },
+  {
+   "tool": "code-review (brecha del motor local)",
+   "rule": "4gl-run-shell-with-input",
+   "severity": "HIGH",
+   "target": "src/AF009_pgmas/EXCB001.4gl L217-244 (ls/rm sobre ruta de configuración)",
+   "status": "latent",
+   "evidence": [
+    {"file": "src/AF009_pgmas/EXCB001.4gl", "line": 217},
+    {"file": "src/AF009_pgmas/EXCB001.4gl", "line": 219},
+    {"file": "src/AF009_pgmas/EXCB001.4gl", "line": 242},
+    {"file": "src/AF009_pgmas/EXCB001.4gl", "line": 244}
+   ],
+   "justification": "RUN 'cd ',gparam_dev.ruta_rescate,'; ls > archivos' (L217-219) y '; rm archivos' (L242-244). ruta_rescate proviene de la tabla de parámetros seg_modulo (configuración administrada en BD), no de PROMPT: inyección de segundo orden — explota solo si un admin malicioso/corrupto controla la tabla. Gap del motor local."
+  },
+  {
+   "tool": "code-review (brecha del motor local)",
+   "rule": "4gl-run-shell-with-input",
+   "severity": "HIGH",
+   "target": "src/AF009_pgmas/EXCB102.4gl (sed/touch/cd/rm/cat con ruta_rescate y generar — consolidado 7+ sitios)",
+   "status": "latent",
+   "evidence": [
+    {"file": "src/AF009_pgmas/EXCB102.4gl", "line": 325},
+    {"file": "src/AF009_pgmas/EXCB102.4gl", "line": 331},
+    {"file": "src/AF009_pgmas/EXCB102.4gl", "line": 344},
+    {"file": "src/AF009_pgmas/EXCB102.4gl", "line": 345},
+    {"file": "src/AF009_pgmas/EXCB102.4gl", "line": 448},
+    {"file": "src/AF009_pgmas/EXCB102.4gl", "line": 1215}
+   ],
+   "justification": "Consolidado de los RUN lejecuta del batch: sed -e '...', touch, cd/rm y cat concatenando gparam_dev.ruta_rescate (tabla seg_modulo) y generar = g_bat.parametro1 CLIPPED (tabla dis_ctrl_proceso, L212). Sin input directo de usuario; inyección de segundo orden vía tablas de control. Consolidación de >20 sitios RUN del archivo (motor local no los reporta: comando armado en LET multiline)."
+  },
+  {
+   "tool": "code-review (brecha del motor local)",
+   "rule": "4gl-run-shell-with-input",
+   "severity": "HIGH",
+   "target": "src/AF009_pgmas/EXCC001.4gl L321-322 (impresión lp)",
+   "status": "latent",
+   "evidence": [
+    {"file": "src/AF009_pgmas/EXCC001.4gl", "line": 304},
+    {"file": "src/AF009_pgmas/EXCC001.4gl", "line": 321},
+    {"file": "src/AF009_pgmas/EXCC001.4gl", "line": 322}
+   ],
+   "justification": "RUN g_lista con 'lp ',g_impre donde g_impre = g_param_dev.ruta_listados,'/',usuario (L304, tabla de parámetros + USER de BD). Inyección de segundo orden si ruta_listados está comprometida. Gap del motor local."
+  },
+  {
+   "tool": "code-review (brecha del motor local)",
+   "rule": "4gl-shell-script-path",
+   "severity": "MEDIUM",
+   "target": "AF009: sh /safre/est/shells/env_mail_gral.sh (5 sitios)",
+   "status": "confirmed",
+   "evidence": [
+    {"file": "src/AF009_pgmas/EXCB100.4gl", "line": 409},
+    {"file": "src/AF009_pgmas/EXCB100.4gl", "line": 416},
+    {"file": "src/AF009_pgmas/EXCB102.4gl", "line": 1379},
+    {"file": "src/AF009_pgmas/EXCB103.4gl", "line": 1077},
+    {"file": "src/AF009_pgmas/EXCB106.4gl", "line": 533}
+   ],
+   "justification": "RUN lejecuta ejecuta shell externo por ruta absoluta /safre/est/shells/env_mail_gral.sh con argumentos (asunto, nombre de reporte, ruta_listados, programa) concatenados de tablas de parámetros — acoplamiento a filesystem del host y ejecución de script externo no versionado en el fuente. Regla existente en tools/semgrep-4gl.yml pero no disparada: la ruta está en variable asignada en LET multiline, no en la línea del RUN."
+  },
+  {
+   "tool": "code-review",
+   "rule": "4gl-shell-world-permissions",
+   "severity": "LOW",
+   "target": "src/AF009_pgmas/EXCB103.4gl (chmod 777 sobre salidas — 6 sitios)",
+   "status": "confirmed",
+   "evidence": [
+    {"file": "src/AF009_pgmas/EXCB103.4gl", "line": 274},
+    {"file": "src/AF009_pgmas/EXCB103.4gl", "line": 275},
+    {"file": "src/AF009_pgmas/EXCB103.4gl", "line": 358},
+    {"file": "src/AF009_pgmas/EXCB103.4gl", "line": 497},
+    {"file": "src/AF009_pgmas/EXCB103.4gl", "line": 953},
+    {"file": "src/AF009_pgmas/EXCB103.4gl", "line": 1064}
+   ],
+   "justification": "RUN lpermisos con 'chmod 777 ' sobre archivos de salida generados (dev_cza/dev_det/rutas de g_ruta): archivos world-writable en directorios compartidos — cualquier usuario del host puede alterar reportes/salidas del proceso de devoluciones. Regla no existente en el ruleset actual; hallazgo por revisión manual."
+  },
+  {
+   "tool": "code-review",
+   "rule": "email-address-in-source",
+   "severity": "INFO",
+   "target": "src/AF009_pgmas/EXCB100.4gl L399-403 (bloque mailx)",
+   "status": "confirmed",
+   "evidence": [
+    {"file": "src/AF009_pgmas/EXCB100.4gl", "line": 399},
+    {"file": "src/AF009_pgmas/EXCB100.4gl", "line": 401}
+   ],
+   "justification": "Tres direcciones de correo corporativas hardcodeadas en la lista de destinatarios del bloque mailx (semi-comentado, sustituido por env_mail_gral.sh). No es credencial: fuga menor de contactos internos. Valor NO reproducido en facts/ por confidentiality.secrets=obfuscate (ubicación+tipo únicamente)."
+  },
+  {
+   "tool": "semgrep-4gl (pattern_scan.py)",
+   "rule": "4gl-prompt-without-validation",
+   "severity": "LOW",
+   "target": "src/AF009_pgmas/EXCB001.4gl (5 PROMPT: L207, L237, L355, L376, L619)",
+   "status": "latent",
+   "evidence": [
+    {"file": "src/AF009_pgmas/EXCB001.4gl", "line": 207},
+    {"file": "src/AF009_pgmas/EXCB001.4gl", "line": 355},
+    {"file": "src/AF009_pgmas/EXCB001.4gl", "line": 376},
+    {"file": "src/AF009_pgmas/EXCB001.4gl", "line": 362}
+   ],
+   "justification": "Consolidado por programa (5 resultados del scanner). El único PROMPT que alimenta ejecución es L355 (folio a reversar) → lfolio → argumento del RUN nohup EXCB100 (L382-388), MITIGADO por validación dígito-a-dígito NOT MATCHES \"[0-9]\" (L361-368). L207/L237/L376 son confirmaciones S/N validadas con MATCHES '[Ss]' (L213, L381); L619 es ENTER-continue. Ningún PROMPT alimenta SQL. Superficie latiente: la validación es manual y local al punto de captura."
+  },
+  {
+   "tool": "semgrep-4gl (pattern_scan.py)",
+   "rule": "4gl-prompt-without-validation",
+   "severity": "LOW",
+   "target": "src/AF009_pgmas/EXCB005.4gl (2 PROMPT: L250, L519)",
+   "status": "refuted",
+   "evidence": [
+    {"file": "src/AF009_pgmas/EXCB005.4gl", "line": 250},
+    {"file": "src/AF009_pgmas/EXCB005.4gl", "line": 254},
+    {"file": "src/AF009_pgmas/EXCB005.4gl", "line": 519}
+   ],
+   "justification": "Consolidado por programa. L250 es confirmación S/N validada con MATCHES '[Ss]' (L254); L519 es ENTER-continue. El folio del flujo proviene del form EXCB0051.per con TYPE INTEGER (captura tipada), no de PROMPT; no alimentan SQL ni RUN."
+  },
+  {
+   "tool": "semgrep-4gl (pattern_scan.py)",
+   "rule": "4gl-prompt-without-validation",
+   "severity": "LOW",
+   "target": "src/AF009_pgmas/EXCB007.4gl (2 PROMPT: L189, L477)",
+   "status": "refuted",
+   "evidence": [
+    {"file": "src/AF009_pgmas/EXCB007.4gl", "line": 189},
+    {"file": "src/AF009_pgmas/EXCB007.4gl", "line": 195},
+    {"file": "src/AF009_pgmas/EXCB007.4gl", "line": 477}
+   ],
+   "justification": "Consolidado por programa. L189 confirmación S/N con MATCHES '[Ss]' (L195); L477 ENTER-continue. Folio por form EXCB0071.per TYPE INTEGER. No alimentan SQL ni RUN."
+  },
+  {
+   "tool": "semgrep-4gl (pattern_scan.py)",
+   "rule": "4gl-prompt-without-validation",
+   "severity": "LOW",
+   "target": "src/AF009_pgmas/EXCB100.4gl (1 PROMPT: L622)",
+   "status": "refuted",
+   "evidence": [
+    {"file": "src/AF009_pgmas/EXCB100.4gl", "line": 622}
+   ],
+   "justification": "ENTER-continue al final del reporte; EXCB100 recibe folio/sesión por ARG_VAL (batch lanzado vía nohup), no por PROMPT. No alimenta SQL ni RUN."
+  },
+  {
+   "tool": "semgrep-4gl (pattern_scan.py)",
+   "rule": "4gl-prompt-without-validation",
+   "severity": "LOW",
+   "target": "src/AF009_pgmas/EXCB102.4gl (1 PROMPT: L1552)",
+   "status": "refuted",
+   "evidence": [
+    {"file": "src/AF009_pgmas/EXCB102.4gl", "line": 1552}
+   ],
+   "justification": "ENTER-continue; programa batch sin capturas de datos por PROMPT (parámetros desde dis_ctrl_proceso/seg_modulo). No alimenta SQL ni RUN."
+  },
+  {
+   "tool": "semgrep-4gl (pattern_scan.py)",
+   "rule": "4gl-prompt-without-validation",
+   "severity": "LOW",
+   "target": "src/AF009_pgmas/EXCB103.4gl (1 PROMPT: L1557)",
+   "status": "refuted",
+   "evidence": [
+    {"file": "src/AF009_pgmas/EXCB103.4gl", "line": 1557}
+   ],
+   "justification": "ENTER-continue; batch con parámetros por ARG_VAL/tablas de control. No alimenta SQL ni RUN."
+  },
+  {
+   "tool": "semgrep-4gl (pattern_scan.py)",
+   "rule": "4gl-prompt-without-validation",
+   "severity": "LOW",
+   "target": "src/AF009_pgmas/EXCB106.4gl (1 PROMPT: L853)",
+   "status": "refuted",
+   "evidence": [
+    {"file": "src/AF009_pgmas/EXCB106.4gl", "line": 853}
+   ],
+   "justification": "ENTER-continue; el parámetro externo vparametro2 llega por ARG_VAL(2) y está cubierto en el hallazgo 4gl-sql-string-concat L151 (coerción INTEGER). No alimenta SQL ni RUN por PROMPT."
+  },
+  {
+   "tool": "semgrep-4gl (pattern_scan.py)",
+   "rule": "4gl-prompt-without-validation",
+   "severity": "LOW",
+   "target": "src/AF009_pgmas/EXCC001.4gl (1 PROMPT: L532)",
+   "status": "refuted",
+   "evidence": [
+    {"file": "src/AF009_pgmas/EXCC001.4gl", "line": 532}
+   ],
+   "justification": "ENTER-continue. El input de datos real de EXCC001 fluye por CONSTRUCT (L152) y ya está reportado como hallazgo confirmed 4gl-sql-string-concat L185. El PROMPT no alimenta SQL ni RUN."
+  }
+ ],
+ "scans": [
+  {
+   "tool": "pattern_scan.py semgrep-mode (rules tools/semgrep-4gl.yml)",
+   "report": "artifacts/semgrep-2026-10-19.json",
+   "scope": "src/AF009_pgmas"
+  },
+  {
+   "tool": "pattern_scan.py gitleaks-mode",
+   "report": "artifacts/gitleaks-2026-10-19.json",
+   "scope": "src/AF009_pgmas"
+  }
+ ]
+}

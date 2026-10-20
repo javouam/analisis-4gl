@@ -1,0 +1,40 @@
+DATABASE safre_af
+SCREEN 
+{
+-----------------------------------------------------------------------------
+
+
+   Fecha proceso [f000      ]          Parametro 1      [f005           ] 
+
+   Proceso cod   [f001      ]          Parametro 2      [f006           ]
+
+   Etapa cod     [f002]                Parametro 3      [f007           ]
+
+   Hora inicial  [f003    ]            Parametro 4      [f008           ]
+
+   Hora final    [f004    ]            Parametro 5      [f009           ]
+
+   Folio         [f111     ]           Usuario          [f011     ]
+
+   Resultado     [f010                                                  ]
+}
+end
+tables
+dis_ctrl_proceso
+attributes
+f000 = dis_ctrl_proceso.fecha_proceso,FORMAT="dd-mm-yyyy";
+f001 = dis_ctrl_proceso.proceso_cod,UPSHIFT;
+f002 = dis_ctrl_proceso.etapa_cod;
+f003 = dis_ctrl_proceso.hora_inicial;
+f004 = dis_ctrl_proceso.hora_final;
+f005 = dis_ctrl_proceso.parametro1,REVERSE;
+f006 = dis_ctrl_proceso.parametro2,REVERSE;
+f007 = dis_ctrl_proceso.parametro3,REVERSE;
+f008 = dis_ctrl_proceso.parametro4,REVERSE;
+f009 = dis_ctrl_proceso.parametro5,REVERSE;
+f111 = dis_ctrl_proceso.folio;
+f010 = dis_ctrl_proceso.resultado;
+f011 = dis_ctrl_proceso.usuario;
+END
+INSTRUCTIONS
+DELIMITERS ": "

@@ -1,0 +1,135 @@
+# Reglas semgrep 4GL (modo generic) — kit de análisis legacy 4GL
+# Cobertura: Informix 4GL (.4gl/.per) y Progress ABL (.p/.w/.a/.abl).
+# El modo generic trabaja sobre tokens/línea: los patrones son regex de línea.
+# Validar sintaxis antes de usar: docker run --rm -v "$PWD":/src:ro \
+#   returntocorp/semgrep semgrep --validate --config /src/tools/semgrep-4gl.yml
+# Correr: semgrep scan --config tools/semgrep-4gl.yml --json \
+#         --output artifacts/semgrep-4gl-$(date +%F).json src/
+#
+# NOTA calibración: severidades iniciales [inferencia]; ajustar tras revisar
+# los N primeros hallazgos contra el código real del cliente (false positives
+# esperables en comentarios y literales de ejemplo).
+
+rules:
+  # ── Credenciales ────────────────────────────────────────────────────────
+  - id: 4gl-hardcoded-db-credentials
+    languages: [generic]
+    paths:
+      include: ["*.4gl", "*.per", "*.p", "*.w", "*.a", "*.abl"]
+    severity: ERROR
+    message: >
+      Credencial de BD hardcodeada en CONNECT (usuario/contraseña literal).
+      Rotar y externalizar (variable de entorno / vault).
+    metadata:
+      category: security
+      owasp: "A07:2021 - Identification and Authentication Failures"
+      technology: [informix-4gl, progress-abl]
+      cwe: "CWE-798"
+    # I4GL: CONNECT TO "db" USER "u" USING "p" | ... WITH PASSWORD "p"
+    # ABL:  CONNECT ... USER "u" PASSWORD "p"
+    pattern-regex: (?i)\bconnect\b[^\n]{0,120}\b(user|password|using)\b\s*["'][^"'\n]{2,}["']
+
+  - id: 4gl-credentials-assign
+    languages: [generic]
+    paths:
+      include: ["*.4gl", "*.per", "*.p", "*.w", "*.a", "*.abl"]
+    severity: ERROR
+    message: >
+      Asignación de secreto a variable con literal en claro. Verificar si es
+      credencial real (rotar) o dato de prueba.
+    metadata:
+      category: security
+      owasp: "A02:2021 - Cryptographic Failures"
+      technology: [informix-4gl, progress-abl]
+      cwe: "CWE-798"
+    pattern-regex: (?i)\b(let|assign|define\s+variable\s+\w+\s*=\s*)?\s*\w*(pass|pwd|secret|token|apikey)\w*\s*=\s*["'][^"'\n]{2,}["']
+
+  # ── Inyección SQL (SQL dinámico) ───────────────────────────────────────
+  - id: 4gl-dynamic-sql-concat-prepare
+    languages: [generic]
+    paths:
+      include: ["*.4gl", "*.p", ".w", "*.a", "*.abl"]
+    severity: WARNING
+    message: >
+      PREPARE/EXECUTE IMMEDIATE con concatenación (|| en I4GL, + en ABL):
+      SQL dinámico construido por concatenación — candidato a inyección.
+      Preferir variables host (:var) parametrizadas.
+    metadata:
+      category: security
+      owasp: "A03:2021 - Injection"
+      technology: [informix-4gl, progress-abl]
+      cwe: "CWE-89"
+    pattern-regex: (?i)^\s*(prepare\s+\w+\s+from|execute\s+immediate)\b[^\n]*(\|\||\+)
+
+  - id: 4gl-dynamic-sql-assign
+    languages: [generic]
+    paths:
+      include: ["*.4gl", "*.p", "*.w", "*.a", "*.abl"]
+    severity: WARNING
+    message: >
+      Sentencia SQL armada por concatenación hacia variable (sql/query/stmt).
+      Trazar hasta su PREPARE/EXECUTE para confirmar inyección.
+    metadata:
+      category: security
+      owasp: "A03:2021 - Injection"
+      technology: [informix-4gl, progress-abl]
+      cwe: "CWE-89"
+    pattern-regex: (?i)^\s*let\s+\w*(sql|query|stmt|sentence)\w*\s*=[^\n]*(\|\||\+)
+
+  # ── Ejecución de comandos OS ───────────────────────────────────────────
+  - id: 4gl-os-command-concat
+    languages: [generic]
+    paths:
+      include: ["*.4gl", "*.p", "*.w", "*.a", "*.abl"]
+    severity: WARNING
+    message: >
+      RUN con comando construido dinámicamente — posible command injection.
+    metadata:
+      category: security
+      owasp: "A03:2021 - Injection"
+      technology: [informix-4gl, progress-abl]
+      cwe: "CWE-78"
+    pattern-regex: (?i)^\s*(run|os-command)\b[^\n]*(\|\||\+)
+
+  - id: 4gl-os-command-any
+    languages: [generic]
+    paths:
+      include: ["*.4gl", "*.p", "*.w", "*.a", "*.abl"]
+    severity: INFO
+    message: >
+      Invocación de comando del SO (RUN / OS-COMMAND) — inventario para
+      revisión de superficie de ataque y dependencia del host.
+    metadata:
+      category: security
+      technology: [informix-4gl, progress-abl]
+    pattern-regex: (?i)^\s*(run|os-command|os\s+command)\b
+
+  # ── Exposición de datos sensibles ──────────────────────────────────────
+  - id: 4gl-display-sensitive
+    languages: [generic]
+    paths:
+      include: ["*.4gl", "*.p", "*.w", "*.a", "*.abl"]
+    severity: INFO
+    message: >
+      DISPLAY/MESSAGE de variable con nombre sensible — verificar si expone
+      credenciales o datos personales en pantalla/log.
+    metadata:
+      category: security
+      owasp: "A09:2021 - Security Logging and Monitoring Failures"
+      technology: [informix-4gl, progress-abl]
+      cwe: "CWE-532"
+    pattern-regex: (?i)\b(display|message)\b[^\n]*\b\w*(pass|pwd|secret|token|curp|rfc|nss)\w*
+
+  # ── Pistas en comentarios ──────────────────────────────────────────────
+  - id: 4gl-comment-credential-hint
+    languages: [generic]
+    paths:
+      include: ["*.4gl", "*.per", "*.p", "*.w", "*.a", "*.abl"]
+    severity: INFO
+    message: >
+      Comentario con posible credencial (password/secret = ...) — pista para
+      el análisis de secrets; confirmar con gitleaks.
+    metadata:
+      category: security
+      technology: [informix-4gl, progress-abl]
+    pattern-regex: (#|//|\{)[^\n]*\b(password|passwd|pwd|secret|apikey|token)\b[^\n]{0,20}[:=]

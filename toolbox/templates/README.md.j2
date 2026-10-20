@@ -1,0 +1,62 @@
+# Análisis de aplicación legacy — {{ f.get('inventory', {}).get('app', {}).get('name', meta.get('client', nd)) }}
+
+> Documentación generada determinísticamente desde facts/ (templates v{{ meta.get('templates_version', '1') }}{% if meta.get('artifact_hash') %} · artefacto `{{ meta.artifact_hash[:12] }}`{% endif %}).
+
+## 1. Resumen ejecutivo
+
+{% set s = f.get('synthesis') %}
+{% if s and s.executive and s.executive.summary_points %}
+{% for p in s.executive.summary_points %}
+{{ '- ' ~ p.point ~ (' _(fuente: ' ~ p.provenance ~ ')_' if p.provenance else '') }}
+{% endfor %}
+{% else %}
+> {{ nd }} — síntesis pendiente (facts/synthesis.json)
+{% endif %}
+
+## 2. Cifras clave
+
+{% set q = f.get('quality') %}
+{% set v = f.get('vulnerabilities') %}
+| Métrica | Valor |
+|---|---|
+| Líneas de código (ncloc) | {{ q.measures.ncloc if q else nd }} |
+| Complejidad (puntos de decisión) | {{ q.measures.complexity if q and q.measures.complexity is defined else nd }} |
+| Bugs / smells (SonarQube) | {{ (q.measures.bugs ~ ' / ' ~ q.measures.code_smells) if q and q.measures.bugs is defined else 'N/A — sin Sonar en stack 4GL' }} |
+| Deuda técnica (horas) | {{ q.measures.debt_hours if q and q.measures.debt_hours is defined else nd }} |
+| Duplicación % | {{ q.measures.duplication_pct if q and q.measures.duplication_pct is defined else nd }} |
+| CVEs (C/H/M/L) | {{ (v['items'] | length ~ '') if v else 'N/A — core 4GL sin dependencias empaquetadas' }}{% if v %} — {{ v['items'] | groupby('severity') | length }} severidades{% endif %} |
+| Hallazgos SAST confirmados | {{ f.get('sast', {}).get('findings', []) | selectattr('status', 'equalto', 'confirmed') | list | length if f.get('sast') else nd }} |
+
+## 3. Remediación priorizada
+
+{% if s and s.remediation %}
+| # | Acción | Impacto | Esfuerzo |
+|---|---|---|---|
+{% for r in s.remediation %}
+| {{ loop.index }} | {{ r.action }} | {{ r.impact }} | {{ r.effort }} |
+{% endfor %}
+{% else %}
+> {{ nd }}
+{% endif %}
+
+## 4. Opciones de modernización
+
+{% if s and s.modernization_options %}
+| Opción | Riesgo | Esfuerzo | Comentario |
+|---|---|---|---|
+{% for o in s.modernization_options %}
+| {{ o.option }} | {{ o.risk }} | {{ o.effort }} | {{ o.comment or '' }} |
+{% endfor %}
+{% else %}
+> {{ nd }}
+{% endif %}
+
+## 5. Preguntas para el cliente
+
+{% if s and s.client_questions %}
+{% for q2 in s.client_questions %}
+{{ loop.index }}. {{ q2.question }}
+{% endfor %}
+{% else %}
+> {{ nd }}
+{% endif %}

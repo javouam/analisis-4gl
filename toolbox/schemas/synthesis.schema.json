@@ -1,0 +1,110 @@
+{
+ "$schema": "http://json-schema.org/draft-07/schema#",
+ "additionalProperties": false,
+ "properties": {
+  "client_questions": {
+   "items": {
+    "properties": {
+     "evidence": {
+      "type": "string"
+     },
+     "question": {
+      "type": "string"
+     }
+    },
+    "type": "object"
+   },
+   "type": "array"
+  },
+  "executive": {
+   "properties": {
+    "counts": {
+     "type": "object"
+    },
+    "summary_points": {
+     "items": {
+      "properties": {
+       "point": {
+        "type": "string"
+       },
+       "provenance": {
+        "type": "string"
+       }
+      },
+      "required": [
+       "point"
+      ],
+      "type": "object"
+     },
+     "type": "array"
+    }
+   },
+   "required": [
+    "summary_points"
+   ],
+   "type": "object"
+  },
+  "modernization_options": {
+   "items": {
+    "properties": {
+     "comment": {
+      "type": "string"
+     },
+     "description": {
+      "type": "string"
+     },
+     "effort": {
+      "type": "string"
+     },
+     "option": {
+      "type": "string"
+     },
+     "risk": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "option",
+     "risk",
+     "effort"
+    ],
+    "type": "object"
+   },
+   "type": "array"
+  },
+  "remediation": {
+   "items": {
+    "properties": {
+     "action": {
+      "type": "string"
+     },
+     "effort": {
+      "type": "string"
+     },
+     "impact": {
+      "type": "string"
+     },
+     "note": {
+      "type": "string"
+     },
+     "provenance": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "action",
+     "impact",
+     "effort"
+    ],
+    "type": "object"
+   },
+   "type": "array"
+  }
+ },
+ "required": [
+  "executive",
+  "remediation"
+ ],
+ "title": "synthesis facts",
+ "type": "object"
+}

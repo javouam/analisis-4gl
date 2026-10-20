@@ -1,0 +1,7 @@
+{
+ "findings": [],
+ "meta": {
+  "engine": "tools/pattern_scan.py (local gitleaks-style rules)",
+  "note": "host sin gitleaks/docker — secrets ofuscados (fingerprint) por confidentiality.secrets: obfuscate"
+ }
+}

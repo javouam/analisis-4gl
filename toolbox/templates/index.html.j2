@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="{{ meta.get('language', 'es') }}">
+<head>
+<meta charset="UTF-8">
+<title>Análisis legacy — {{ f.get('inventory', {}).get('app', {}).get('name', 'app') }}</title>
+<style>body{font-family:system-ui;margin:2rem}li{margin:.3rem 0}code{background:#eee;padding:.1rem .3rem}</style>
+</head>
+<body>
+<h1>{{ f.get('inventory', {}).get('app', {}).get('name', 'Aplicación legacy') }}</h1>
+<p>Documentación generada desde facts/ — templates v{{ meta.get('templates_version', '1') }}.</p>
+<ul>
+<li><a href="README.md">Resumen ejecutivo</a></li>
+<li><a href="01-funcional/funcional.md">Catálogo funcional</a></li>
+<li><a href="01-funcional/casos-uso.md">Casos de uso y reglas</a></li>
+<li><a href="03-tecnica/inventario.md">Inventario técnico</a></li>
+<li><a href="03-tecnica/modulos-includes.md">Módulos e includes 4GL</a></li>
+<li><a href="04-seguridad/vulnerabilidades.md">Vulnerabilidades</a></li>
+</ul>
+</body>
+</html>

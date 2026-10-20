@@ -1,0 +1,19 @@
+# Catálogo funcional — {{ f.get('inventory', {}).get('app', {}).get('name', nd) }}
+
+{% set fun = f.get('functional') %}
+{% if fun and fun.options %}
+**Menú ({{ fun.options | length }} opciones)** — origen: {{ fun.menu_source or nd }}
+
+| # | Opción | Pantalla | Priv. ver | Priv. ejecutar |
+|---|---|---|---|---|
+{% for o in fun.options %}
+| {{ loop.index }} | {{ o.title }} | {{ o.screen or nd }} | {{ o.privileges.view if o.privileges else nd }} | {{ o.privileges.execute if o.privileges else nd }} |
+{% endfor %}
+
+**Pantallas ({{ fun.screens | length if fun.screens else 0 }})**
+{% for s in (fun.screens or []) %}
+- `{{ s.file }}`{% if s.title %} — {{ s.title }}{% endif %} · campos: {{ s.fields | map(attribute='id') | join(', ') if s.fields else nd }}
+{% endfor %}
+{% else %}
+> {{ nd }} — sin facts/functional.json
+{% endif %}

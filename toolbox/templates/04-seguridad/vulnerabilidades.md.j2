@@ -1,0 +1,16 @@
+# Vulnerabilidades — {{ f.get('inventory', {}).get('app', {}).get('name', nd) }}
+
+{% set v = f.get('vulnerabilities') %}
+{% if v and v['items'] %}
+{% set counts = v['items'] | groupby('severity') %}
+Total: **{{ v['items'] | length }} CVEs únicos** —
+{% for sev, group in counts %}{{ sev }} {{ group | length }}{% if not loop.last %} · {% endif %}{% endfor %}.
+
+| Sev | CVE | Componente | Fix |
+|---|---|---|---|
+{% for it in v['items'] %}
+| {{ it.severity }} | [{{ it.id }}](https://nvd.nist.gov/vuln/detail/{{ it.id }}) | `{{ it.component }}@{{ it.version }}` | {{ it.fix or '—' }} |
+{% endfor %}
+{% else %}
+> {{ nd }} — sin facts/vulnerabilities.json
+{% endif %}

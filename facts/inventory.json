@@ -1,0 +1,157 @@
+{
+ "app": {
+  "evidence": [
+   {
+    "file": "src/AF009_pgmas/EXCB001.4gl",
+    "line": 90
+   },
+   {
+    "file": "src/AF009_pgmas/EXCB001.4gl",
+    "line": 17
+   },
+   {
+    "file": "src/AF009_pgmas/EXCB001.4gl",
+    "line": 478
+   },
+   {
+    "file": "src/AF009_pgmas/EXCB103.4gl",
+    "line": 180
+   },
+   {
+    "file": "src/AF009_pgmas/EXCB001.4gl",
+    "line": 117
+   },
+   {
+    "file": "src/AF009_pgmas/EXCB007.4gl",
+    "line": 116
+   },
+   {
+    "file": "src/AF009_pgmas/EXCC001.4gl",
+    "line": 124
+   },
+   {
+    "file": "src/AF009_pgmas/EXCC001.4gl",
+    "line": 217
+   },
+   {
+    "file": "src/AF009_pgmas/EXCB0011.per",
+    "line": 1
+   },
+   {
+    "file": "src/AF009_pgmas/EXCB0051.per",
+    "line": 1
+   },
+   {
+    "file": "src/AF009_pgmas/EXCB0071.per",
+    "line": 1
+   },
+   {
+    "file": "src/AF009_pgmas/EXCC0011.per",
+    "line": 1
+   }
+  ],
+  "modules": [
+   {
+    "entry": true,
+    "functions": 7,
+    "kind": "program",
+    "name": "EXCB001.4gl"
+   },
+   {
+    "entry": true,
+    "functions": 6,
+    "kind": "program",
+    "name": "EXCB005.4gl"
+   },
+   {
+    "entry": true,
+    "functions": 6,
+    "kind": "program",
+    "name": "EXCB007.4gl"
+   },
+   {
+    "entry": true,
+    "functions": 8,
+    "kind": "program",
+    "name": "EXCB100.4gl"
+   },
+   {
+    "entry": true,
+    "functions": 16,
+    "kind": "program",
+    "name": "EXCB102.4gl"
+   },
+   {
+    "entry": true,
+    "functions": 16,
+    "kind": "program",
+    "name": "EXCB103.4gl"
+   },
+   {
+    "entry": true,
+    "functions": 10,
+    "kind": "program",
+    "name": "EXCB106.4gl"
+   },
+   {
+    "entry": false,
+    "functions": 12,
+    "kind": "program",
+    "name": "EXCB136.4gl"
+   },
+   {
+    "entry": true,
+    "functions": 13,
+    "kind": "program",
+    "name": "EXCC001.4gl"
+   },
+   {
+    "entry": false,
+    "functions": 0,
+    "kind": "form",
+    "name": "EXCB0011.per"
+   },
+   {
+    "entry": false,
+    "functions": 0,
+    "kind": "form",
+    "name": "EXCB0051.per"
+   },
+   {
+    "entry": false,
+    "functions": 0,
+    "kind": "form",
+    "name": "EXCB0071.per"
+   },
+   {
+    "entry": false,
+    "functions": 0,
+    "kind": "form",
+    "name": "EXCC0011.per"
+   }
+  ],
+  "name": "AF009 — fuentes 4GL proyecto safre_af [inferencia: cabeceras]",
+  "packaging": "4gl"
+ },
+ "counts": {
+  "forms": 4,
+  "functions": 94,
+  "lines_total": 8098,
+  "menu_commands": 12,
+  "menus": 4,
+  "programs": 9,
+  "reports": 17
+ },
+ "libs": [],
+ "stack": {
+  "databases": [
+   "safre_af",
+   "safre_seg",
+   "safre_tmp"
+  ],
+  "framework": "Informix 4GL (.4gl + forms .per)",
+  "languages": [
+   "informix-4gl"
+  ]
+ }
+}

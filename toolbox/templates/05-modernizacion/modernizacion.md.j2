@@ -1,0 +1,50 @@
+# Modernización — {{ f.get('inventory', {}).get('app', {}).get('name', nd) }}
+
+{% set synth = f.get('synthesis') %}
+{% if synth %}
+
+## Resumen ejecutivo
+
+{% set counts = synth.get('executive', {}).get('counts', {}) %}
+{% if counts %}
+| Indicador | Valor |
+|---|---|
+{% for k, v in counts.items() | sort %}
+| {{ k }} | {{ v }} |
+{% endfor %}
+{% endif %}
+
+{% for sp in synth.get('executive', {}).get('summary_points', []) %}
+- {{ sp.point }} `{{ sp.provenance }}`
+{% endfor %}
+
+## Opciones de modernización
+
+| Opción | Esfuerzo | Riesgo | Comentario |
+|---|---|---|---|
+{% for o in synth.get('modernization_options', []) %}
+| {{ o.option }} | {{ o.effort }} | {{ o.risk }} | {{ o.comment }} |
+{% endfor %}
+
+## Plan de remediación priorizado
+
+| Acción | Esfuerzo | Impacto | Procedencia |
+|---|---|---|---|
+{% for r in synth.get('remediation', []) %}
+| {{ r.action }} | {{ r.effort }} | {{ r.impact }} | `{{ r.provenance }}` |
+{% endfor %}
+
+## Preguntas para el cliente
+
+| Pregunta | Evidencia que la motiva |
+|---|---|
+{% for q in synth.get('client_questions', []) %}
+| {{ q.question }} | {{ q.evidence }} |
+{% endfor %}
+
+> Las especificaciones de modernización (SDD) versionables viven en `specs/`:
+> casos-uso, reglas-negocio, modelo-datos, mensajes y layout-archivos —
+> trazables a los facts de este documento.
+{% else %}
+> {{ nd }} — sin facts/synthesis.json: se produce en fase C (síntesis) de la fábrica.
+{% endif %}

@@ -1,0 +1,23 @@
+{
+ "version": 1,
+ "client": "sura",
+ "language": "es",
+ "templates_version": "v1-4gl",
+ "artifact": "src/AF009_pgmas",
+ "artifact_hash": "1351e17cc03a0a48b98da06de5c59ce4bb0cf2ca239583ca40631a4e00445f96",
+ "artifact_files": 13,
+ "run": {
+  "date": "2026-10-19",
+  "factory": "toolbox/workflows/legacy-analysis-factory.wf.js",
+  "apps": [
+   "AF009"
+  ],
+  "phases": "A(extractores)+B(sast,funcional)+C(sintesis)+D(render .docs) — corrida 8e4e3116, 0 criticals; cierre etapa 4: 4 diagramas archify showcase + fuentes .mmd, specs 05-modernizacion (790 evidencias, safre_ing cross-db), presentacion 26 slides, catalogo entregables y preguntas-aclaraciones (7)",
+  "outputs": {
+   "diagramas": ".docs/02-arquitectura/diagramas/ (4 pares json+html + 4 .mmd)",
+   "specs": ".docs/05-modernizacion/README.md + specs/ (5 archivos)",
+   "presentaciones": ".docs/presentaciones/analisis-AF009.html + catalogo-entregables-cliente.md",
+   "preguntas": ".docs/preguntas-aclaraciones-sura.md"
+  }
+ }
+}

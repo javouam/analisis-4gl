@@ -1,0 +1,78 @@
+# Arquitectura — {{ f.get('inventory', {}).get('app', {}).get('name', nd) }}
+
+{% set arch = f.get('architecture') %}
+{% set cg = f.get('callgraph') %}
+{% set inv = f.get('inventory') %}
+
+## Vista general
+
+| Atributo | Valor |
+|---|---|
+| Dialecto | {{ inv.stack.framework if inv and inv.stack else nd }} |
+| Runtime | {{ inv.stack.server if inv and inv.stack else nd }} |
+| BDs | {{ inv.stack.databases | join(', ') if inv and inv.stack and inv.stack.databases else nd }} |
+| Módulos fuente | {{ cg.stats.nodes if cg and cg.stats and cg.stats.nodes else (inv.app.modules | length if inv and inv.app and inv.app.modules else nd) }} |
+
+## Diagramas
+
+{% if arch and arch.diagrams %}
+| Diagrama | Generado por |
+|---|---|
+{% for d in arch.diagrams | unique(attribute='file') %}
+| {{ d.file }} | {{ d.generated_by }} |
+{% endfor %}
+
+> Los diagramas interactivos (archify HTML) llevan su fuente textual `.puml`/`.mmd` y el JSON candidato junto al HTML.
+{% else %}
+> {{ nd }} — sin facts/architecture.json: los diagramas se producen en fase de skills (archify) sobre los facts consolidados.
+{% endif %}
+
+## Grafo de llamadas entre módulos
+
+{% if cg and cg.edges %}
+**{{ cg.stats.edges }} aristas inter-módulo · {{ cg.stats.functions_defined }} funciones definidas**
+
+| Desde | Hacia (definición) | Refs | Evidencia (primera) |
+|---|---|---|---|
+{% for e in cg.edges[:25] %}
+| {{ e.from }} | {{ e.to }} | {{ e.refs | length }} | {{ e.refs[0].file }}:{{ e.refs[0].line if e.refs[0].line else '?' }} |
+{% endfor %}
+{% if cg.edges | length > 25 %}
+
+(Solo las primeras 25 aristas de {{ cg.edges | length }} — orden determinista del extractor)
+{% endif %}
+
+### Módulos más invocados (hubs)
+
+| Módulo | Módulos que lo llaman |
+|---|---|
+{% for h in cg.stats.most_called %}
+| {{ h.module }} | {{ h.callers }} |
+{% endfor %}
+{% else %}
+> {{ nd }} — sin facts/callgraph.json: correr `toolbox/extract/callgraph_facts_4gl.py <repo> <facts>`.
+{% endif %}
+
+## Dependencias entre paquetes
+
+{% if arch and arch.package_edges %}
+| Desde | Hacia | Imports |
+|---|---|---|
+{% for p in arch.package_edges %}
+| {{ p.from }} | {{ p.to }} | {{ p.imports }} |
+{% endfor %}
+{% else %}
+> {{ nd }} — aplica a código con paquetes (Java); en 4GL el equivalente es el grafo de llamadas de arriba.
+{% endif %}
+
+## Módulos god (complejidad concentrada)
+
+{% if arch and arch.god_classes %}
+| Módulo/clase | LOC | WMC | CBO |
+|---|---|---|---|
+{% for g in arch.god_classes %}
+| {{ g.class }} | {{ g.loc }} | {{ g.wmc }} | {{ g.cbo if g.cbo is defined else nd }} |
+{% endfor %}
+{% else %}
+> {{ nd }} — se calcula en fase B con métricas de calidad (4GL: funciones con más LOC/llamadas).
+{% endif %}

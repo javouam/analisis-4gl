@@ -1,0 +1,15 @@
+.DS_Store
+*.swp
+.Trash-1000
+build-sonar/
+tools/ck-src/
+jqassistant/
+graphify-out/graph.json
+graphify-out/manifest.json
+graphify-out/cache/
+.docs/
+
+# Copias Windows / configuración local
+models.json
+*:Zone.Identifier
+__pycache__/
